@@ -1,5 +1,5 @@
 {
- "note": "Public test set, 80 conversations, organizers' metric script. Same Gemma 4 26B model in both rows.",
+ "note": "Public test set, 80 conversations, organizers' metric script. Same Gemma 4 26B model in both rows. Steps 2-4 were measured on one learned rulebook; the last step is a fresh full adapt run with the nearest-examples judge.",
  "topics": [
   "credit",
   "financial_position",
@@ -19,12 +19,12 @@
   },
   {
    "name": "Rulebook Judge (this project)",
-   "macro": 0.911,
+   "macro": 0.923,
    "by_topic": [
     1.0,
-    0.818,
+    0.909,
     1.0,
-    0.826
+    0.783
    ]
   }
  ],
@@ -46,8 +46,8 @@
    "macro": 0.88
   },
   {
-   "step": "Nearest examples",
-   "macro": 0.911
+   "step": "Nearest examples + fresh adapt",
+   "macro": 0.923
   }
  ]
 }

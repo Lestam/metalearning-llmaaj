@@ -326,7 +326,7 @@ function detail(key){
   const T={
   hero:["Same model, much closer to the expert",
     sec("What it shows",`<p><b>Macro accuracy</b> = accuracy computed separately for each of the four topics, then averaged — the organizers' official metric, so a small topic counts as much as a big one.</p><p>Both columns use the <b>same Gemma 4 26B</b>. "Plain" asks it the generic question "is this bank-assistant reply good or bad?". "Rulebook Judge" gives it the rulebook that <code>adapt</code> learned from the 150 expert-labeled training conversations, plus the 10 most similar labeled examples.</p>`)+
-    sec("How we measured",`<p>80 expert-labeled public test conversations the learning never saw, scored with the organizers' <code>evaluate.py</code>. Plain Gemma: <b>${b.macro.toFixed(3)}</b>. Rulebook Judge: <b>${o.macro.toFixed(3)}</b> in this run; a second full <code>adapt</code> run with extended priors gave <b>0.887</b>. With 80 conversations a 2-point gap is two conversations — treat 0.887–0.911 as one result.</p>`)+
+    sec("How we measured",`<p>80 expert-labeled public test conversations the learning never saw, scored with the organizers' <code>evaluate.py</code>. Plain Gemma: <b>${b.macro.toFixed(3)}</b>. Rulebook Judge: <b>${o.macro.toFixed(3)}</b> with the final code; earlier complete runs with earlier priors gave <b>0.911</b> and <b>0.887</b>. With 80 conversations a 2-point gap is two conversations — treat 0.887–0.923 as one result with run-to-run spread.</p>`)+
     sec("What changed in practice",`<p>Bad replies let through: <b>${c.plain.bad.good} of ${nb}</b> → <b>${c.ours.bad.good} of ${nb}</b>. Good replies wrongly rejected: <b>${c.plain.good.bad} of ${ng}</b> → <b>${c.ours.good.bad} of ${ng}</b>.</p>`)+
     sec("Conclusion",`<p>The gap between a generic judge and the bank's expert is mostly <b>unstated rules</b>. Once Gemma writes them down from the expert's labels and applies them, the same model agrees with the expert far more often — and the rules are readable, so compliance can check and edit them.</p>`,"concl")],
   topics:["Every topic improves — spending the most",
@@ -341,7 +341,7 @@ function detail(key){
        [1,"adapt mines a two-level rulebook (cross-topic principles + topic knowledge) from the labels and validates it leave-one-out."],
        [2,"The judge reasons before labeling, so it recomputes the figures the assistant stated instead of trusting them."],
        [3,"Told to judge substance, not wording: an offer to help is not a claimed action; a correct reply phrased differently is fine."],
-       [4,"Only the 10 most similar labeled examples go into the prompt instead of the whole topic: less noise, 2–4× fewer tokens."]]
+       [4,"Only the 10 most similar labeled examples go into the prompt instead of the whole topic: less noise, 2–4× fewer tokens. On the same rulebook as the previous steps this gave 0.933; the value shown is a fresh, complete adapt + eval run of the pipeline."]]
       .map(([i,t])=>{const x=(s.ladder||[])[i];return x?`<tr><td><b>${esc(x.step)}</b></td><td class="n">${x.macro.toFixed(3)}</td><td class="n" style="color:var(--good);font-weight:700">${i?"+"+(x.macro-s.ladder[i-1].macro).toFixed(3):""}</td><td>${t}</td></tr>`:""}).join("")+`</table>`)+
     sec("Conclusion",`<p>The rulebook gives the first jump; making the judge <b>check</b> (reason, recompute) and <b>not over-react</b> (substance over wording) gives as much again.</p>`,"concl")],
   errors:["Plain Gemma is lenient; the rulebook makes it strict where the expert is strict",

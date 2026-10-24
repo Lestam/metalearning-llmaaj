@@ -209,7 +209,7 @@ svg text{font-family:inherit}
   <svg class="logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M3 5.5c3-1.5 6-1.5 9 .5v14c-3-2-6-2-9-.5z"/><path d="M21 5.5c-3-1.5-6-1.5-9 .5v14c3-2 6-2 9-.5z"/></svg>
   <div><h1>Rulebook Judge · Test range</h1>
     <div class="sub">Gemma 4 26B · same model, with and without the learned rulebook · <span id="n">80</span> expert-labeled test conversations</div></div>
-  <button class="play" id="play">▶ Play the story <span id="ptime">1:52</span></button>
+  <button class="play" id="play">▶ Play the story <span id="ptime">2:01</span></button>
   <div class="switch"><a class="on" href="/dashboard">Dashboard</a><a href="/">Workbench</a></div>
 </header>
 <main id="main">
@@ -407,7 +407,7 @@ function next(){
   $("subs").textContent=part.text;$("subs").classList.add("on");
   au.src=`/narration/${part.block}.mp3`;au.play();
 }
-au.onended=()=>{if(playing)next();};
+au.onended=()=>{if(playing)setTimeout(()=>{if(playing)next();},400);};
 async function load(){
   $("play").onclick=playStory;
   const d=await (await fetch("/api/dashboard")).json();D=d;

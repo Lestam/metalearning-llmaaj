@@ -32,9 +32,13 @@ main{max-width:1440px;margin:0 auto;padding:12px 32px 32px;display:grid;grid-tem
 .s3{grid-column:span 3}.s4{grid-column:span 4}.s5{grid-column:span 5}.s7{grid-column:span 7}.s12{grid-column:span 12}
 @media(max-width:1100px){.s3,.s4,.s5,.s7{grid-column:span 12}}
 /* hero */
-.hero .deco1{position:absolute;width:160px;height:120px;border-radius:50%;background:var(--mint);left:-50px;bottom:-40px;opacity:.8}
-.hero .deco2{position:absolute;width:150px;height:90px;border-radius:50%;background:var(--lilac);right:-30px;bottom:-30px;opacity:.9}
-.hero .deco3{position:absolute;width:120px;height:80px;border-radius:50%;background:var(--blue-soft);left:120px;bottom:-50px}
+.hero .deco1{position:absolute;width:140px;height:140px;border-radius:50%;background:var(--mint);right:-50px;top:-50px;opacity:.8}
+.hero .deco2{position:absolute;width:70px;height:70px;border-radius:18px;background:var(--lilac);right:60px;top:-24px;transform:rotate(16deg);opacity:.9}
+.hero .deco3{display:none}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;position:relative;z-index:1}
+.kpi{background:var(--bg);border-radius:14px;padding:10px 12px}
+.kpi b{display:block;font-size:20px}
+.kpi span{font-size:12px;color:var(--mut)}
 .score{display:flex;align-items:flex-start;gap:16px;margin:22px 0 14px;position:relative;z-index:1}
 .num{font-size:64px;font-weight:800;letter-spacing:-.04em;line-height:1}
 .num.after{color:var(--blue)}
@@ -49,16 +53,36 @@ main{max-width:1440px;margin:0 auto;padding:12px 32px 32px;display:grid;grid-tem
 .legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
 svg text{font-family:inherit}
 /* confusion */
-.alert{background:var(--bad-soft);color:var(--bad);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:600}
-.cm{display:grid;grid-template-columns:1fr 1px 1fr;gap:18px;margin-top:14px}
+
+.cm{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
 .cm .sep{background:var(--line)}
 .cm .cap{font-weight:700;margin-bottom:6px}
 .cm table{border-collapse:separate;border-spacing:4px;width:100%}
-.cm td{border-radius:10px;text-align:center;padding:12px 4px;font-weight:800;font-size:22px}
-.cm th{font-size:12px;color:var(--mut);font-weight:500;text-align:left;white-space:nowrap}
+.cm td{border-radius:10px;text-align:center;padding:10px 2px;font-weight:800;font-size:20px;width:38%}
+.cm th{font-size:11px;color:var(--mut);font-weight:500;text-align:left;white-space:nowrap}
+.cmnote{font-size:14px;margin-top:12px}
+.cmnote b{color:var(--bad)}.cmnote b.gd{color:var(--good)}
 .cm thead th{text-align:center}
 .ok{background:var(--good-soft);color:var(--good)}
 .miss{background:var(--bad-soft);color:var(--bad)}
+/* steps */
+.steps{margin-top:12px;display:flex;flex-direction:column;gap:9px}
+.step{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;font-size:13px}
+.step .bar{grid-column:1/-1;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.step .bar i{display:block;height:100%;border-radius:3px;background:var(--good)}
+.step.first .bar i{background:var(--grey)}.step.last .bar i{background:var(--blue)}
+.step .v{font-weight:700}.step .d{color:var(--good);font-weight:700;min-width:48px;text-align:right}
+.step.last .v{color:var(--blue)}
+/* principle rows */
+.prows{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.prow{display:grid;grid-template-columns:30px 1fr 34px;gap:10px;align-items:start;font-size:13px}
+.prow .pid{background:var(--blue-soft);color:var(--blue);border-radius:8px;font-weight:700;text-align:center;padding:2px 0}
+.prow .pt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.prow .pb{grid-column:2;height:5px;border-radius:3px;background:var(--line);margin-top:-4px}
+.prow .pb i{display:block;height:100%;border-radius:3px;background:var(--blue)}
+.prow .pc{font-weight:800;text-align:right}
+.fixsum{display:flex;gap:10px;flex-wrap:wrap;margin-left:auto}
+.fixsum span{border-radius:999px;padding:4px 12px;font-size:13px;font-weight:600}
 /* chips */
 .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
 .chip{border-radius:999px;padding:8px 14px;font-size:13px;font-weight:600;display:flex;gap:8px;align-items:center}
@@ -80,7 +104,7 @@ svg text{font-family:inherit}
 .tgroup.financial_position{background:var(--lilac)}.tgroup.financial_position h3 span{background:#7b4fe0}
 @media (prefers-color-scheme:dark){.tgroup.spending{background:#33280f}.tgroup.financial_position{background:#271d40}}
 .tgrid{display:flex;flex-wrap:wrap;gap:8px}
-.tile{width:34px;height:24px;border-radius:7px;overflow:hidden;display:flex;gap:2px;cursor:pointer;transition:transform .12s;background:var(--card)}
+.tile{width:30px;height:22px;border-radius:7px;overflow:hidden;display:flex;gap:2px;cursor:pointer;transition:transform .12s;background:var(--card)}
 .tile:hover{transform:scale(1.3);box-shadow:0 0 0 2px var(--blue)}
 .tile span{flex:1}
 .g{background:#7fd3a3}.r{background:#f2847b}
@@ -110,19 +134,22 @@ svg text{font-family:inherit}
       <div><div class="num after" id="to">—</div><div class="numlab after">Rulebook Judge</div></div>
     </div>
     <div class="gain"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg><span id="gain"></span></div>
-    <div class="gainnote">higher macro accuracy · same model, same test set, organizers' metric script</div>
+    <div class="gainnote">same model, same 80 conversations, organizers' metric script</div>
+    <div class="kpis"><div class="kpi"><b id="k1">—</b><span>bad replies let through</span></div><div class="kpi"><b id="k2">—</b><span>good replies wrongly rejected</span></div></div>
   </section>
   <section class="card s5"><h2>Accuracy by topic <span class="legend"><span><i style="background:var(--grey)"></i>Plain Gemma 4</span><span><i style="background:var(--blue)"></i>Rulebook Judge</span></span></h2>
     <svg id="bars" width="100%" height="250"></svg></section>
-  <section class="card s3"><h2>What moved the score</h2><svg id="ladder" width="100%" height="250"></svg></section>
-  <section class="card s5"><h2>Confusion matrices <span class="alert" id="alert">Plain model is too lenient on bad replies</span></h2>
-    <div class="cm" id="cm"></div></section>
-  <section class="card s4"><h2>Learned rulebook at a glance</h2><div class="hint">general principles · test conversations each one caught</div><div class="chips" id="chips"></div></section>
+  <section class="card s3"><h2>What moved the score</h2><div class="hint">each step measured on the same test set</div><div class="steps" id="steps"></div></section>
+  <section class="card s4"><h2>Where the errors are</h2><div class="hint">rows = expert label · columns = verdict</div>
+    <div class="cm" id="cm"></div><div class="cmnote" id="cmnote"></div></section>
+  <section class="card s5"><h2>Learned rulebook at a glance</h2><div class="hint">general principles learned by Gemma 4 · bad test replies each one caught</div><div class="prows" id="prows"></div></section>
   <section class="card s3"><h2>⚠️ Where it still fails</h2><ol class="fails">
     <li>Arithmetic-heavy spending totals: the judge sometimes recomputes a correct answer wrongly.</li>
     <li>Most remaining errors are good replies rejected, not bad replies accepted.</li>
     <li>Defects absent from the training labels can be missed.</li></ol></section>
-  <section class="card s12"><h2>Test conversations <small id="total"></small>
+  <section class="card s12"><h2>Every test conversation <small id="total"></small><span class="fixsum" id="fixsum"></span></h2>
+    <div class="hint" style="margin-top:4px">each tile = one conversation · left half plain Gemma 4, right half Rulebook Judge · green = agrees with the expert, red = disagrees · hover for details</div>
+    <h2 style="display:none">
     <span class="legend"><span><i style="background:var(--grey)"></i>Plain Gemma 4 (left)</span><span><i style="background:var(--blue)"></i>Rulebook Judge (right)</span><span><i style="background:#7fd3a3"></i>agrees with expert</span><span><i style="background:#f2847b"></i>disagrees</span></span></h2>
     <div class="tiles" id="tiles"></div></section>
 </main>
@@ -134,13 +161,14 @@ const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim
 const TOP=["credit","savings","spending","financial_position"];
 function bars(s){
   const svg=$("bars"),W=svg.clientWidth||520,H=250,L=34,B=40,gw=(W-L)/TOP.length,bw=Math.min(40,gw/3);
-  const y=v=>H-B-v*(H-B-28);
+  const y=v=>H-B-v*(H-B-48);
   let h="";[0,.2,.4,.6,.8,1].forEach(v=>{h+=`<text x="0" y="${y(v)+4}" font-size="11" fill="${css('--mut')}">${v.toFixed(1)}</text><line x1="${L}" y1="${y(v)}" x2="${W}" y2="${y(v)}" stroke="${css('--line')}"/>`;});
   TOP.forEach((t,i)=>{const k=s.topics.indexOf(t),a=s.rows[0].by_topic[k],b=s.rows[1].by_topic[k],x=L+i*gw+gw/2;
     h+=`<rect x="${x-bw-3}" y="${y(a)}" width="${bw}" height="${y(0)-y(a)}" rx="5" fill="${css('--grey')}"/>`+
        `<rect x="${x+3}" y="${y(b)}" width="${bw}" height="${y(0)-y(b)}" rx="5" fill="${css('--blue')}"/>`+
        `<text x="${x-bw/2-3}" y="${y(a)-6}" font-size="12" text-anchor="middle" fill="${css('--ink')}">${a.toFixed(3)}</text>`+
        `<text x="${x+bw/2+3}" y="${y(b)-6}" font-size="12" font-weight="700" text-anchor="middle" fill="${css('--blue')}">${b.toFixed(3)}</text>`+
+       `<text x="${x}" y="${Math.min(y(a),y(b))-22}" font-size="12" font-weight="800" text-anchor="middle" fill="${css('--good')}">+${(b-a).toFixed(3)}</text>`+
        `<text x="${x}" y="${H-18}" font-size="12" text-anchor="middle" fill="${css('--ink')}">${t==="financial_position"?"financial":t}</text>`+
        (t==="financial_position"?`<text x="${x}" y="${H-4}" font-size="12" text-anchor="middle" fill="${css('--ink')}">position</text>`:"");});
   svg.innerHTML=h;
@@ -160,12 +188,17 @@ function ladder(steps){
        `<foreignObject x="${px(i)-34}" y="${H-38}" width="68" height="38"><div xmlns="http://www.w3.org/1999/xhtml" style="font-size:10.5px;line-height:1.15;text-align:center;color:${css('--mut')}">${esc(s.step)}</div></foreignObject>`;});
   svg.innerHTML=h;
 }
+function stepsList(steps){
+  const lo=steps[0].macro-0.03,hi=steps[steps.length-1].macro;
+  $("steps").innerHTML=steps.map((x,i)=>`<div class="step ${i===0?"first":i===steps.length-1?"last":""}"><span>${esc(x.step)}</span><span class="v">${x.macro.toFixed(3)}</span><span class="d">${i?"+"+(x.macro-steps[i-1].macro).toFixed(3):""}</span><div class="bar"><i style="width:${Math.max(4,(x.macro-lo)/(hi-lo)*100)}%"></i></div></div>`).join("");
+}
 function cm(c){
-  const one=(name,m)=>`<div><div class="cap">${name}</div><table><thead><tr><th></th><th>Predicted good</th><th>Predicted bad</th></tr></thead>
-    <tr><th>Expert good</th><td class="ok">${m.good.good}</td><td class="miss">${m.good.bad}</td></tr>
-    <tr><th>Expert bad</th><td class="miss">${m.bad.good}</td><td class="ok">${m.bad.bad}</td></tr></table></div>`;
-  $("cm").innerHTML=one("Plain Gemma 4",c.plain)+`<div class="sep"></div>`+one("Rulebook Judge",c.ours);
-  $("alert").textContent=`Plain Gemma lets ${c.plain.bad.good} of ${c.plain.bad.good+c.plain.bad.bad} bad replies through · Rulebook Judge: ${c.ours.bad.good}`;
+  const one=(name,m)=>`<div><div class="cap">${name}</div><table><thead><tr><th></th><th>→ good</th><th>→ bad</th></tr></thead>
+    <tr><th>expert good</th><td class="ok">${m.good.good}</td><td class="miss">${m.good.bad}</td></tr>
+    <tr><th>expert bad</th><td class="miss">${m.bad.good}</td><td class="ok">${m.bad.bad}</td></tr></table></div>`;
+  $("cm").innerHTML=one("Plain Gemma 4",c.plain)+one("Rulebook Judge",c.ours);
+  const nb=c.plain.bad.good+c.plain.bad.bad;
+  $("cmnote").innerHTML=`Plain Gemma is too lenient: it lets <b>${c.plain.bad.good} of ${nb}</b> bad replies through. The Rulebook Judge lets <b class="gd">${c.ours.bad.good}</b> through, at the cost of ${c.ours.good.bad-c.plain.good.bad} more good replies rejected.`;
 }
 function shortRule(r){let s=r.split(/[:;(—]| - /)[0].trim();return s.length>38?s.slice(0,36).trim()+"…":s;}
 const ICONS=["✓","€","⌕","☰","%","⛨","✎"];
@@ -187,9 +220,14 @@ async function load(){
   const s=d.scores,[b,o]=s.rows;$("n").textContent=d.items.length;
   $("from").textContent=b.macro.toFixed(3);$("to").textContent=o.macro.toFixed(3);$("gain").textContent=`+${((o.macro-b.macro)*100).toFixed(1)} pts`;
   const steps=(s.ladder||[]).filter(x=>!x.skip);
-  bars(s);ladder(steps);cm(d.confusion);tiles(d.items);
-  $("chips").innerHTML=d.principles.sort((x,y)=>y.caught-x.caught).map((p,i)=>`<span class="chip c${i%7}" title="${esc(p.rule)}">${ICONS[i%7]} ${esc(shortRule(p.rule))} · ${p.caught}</span>`).join("");
-  addEventListener("resize",()=>{bars(s);ladder(steps);});
+  bars(s);stepsList(steps);cm(d.confusion);tiles(d.items);
+  const c=d.confusion;$("k1").innerHTML=`${c.plain.bad.good} → <span style="color:var(--blue)">${c.ours.bad.good}</span> <small style="font-size:12px;color:var(--mut)">of ${c.plain.bad.good+c.plain.bad.bad}</small>`;
+  $("k2").innerHTML=`${c.plain.good.bad} → <span style="color:var(--blue)">${c.ours.good.bad}</span> <small style="font-size:12px;color:var(--mut)">of ${c.plain.good.good+c.plain.good.bad}</small>`;
+  const mx=Math.max(1,...d.principles.map(p=>p.caught));
+  $("prows").innerHTML=d.principles.sort((x,y)=>y.caught-x.caught).map(p=>`<div class="prow" title="${esc(p.rule)}"><span class="pid">${esc(p.id)}</span><span class="pt">${esc(p.rule)}</span><span class="pc">${p.caught}</span><div class="pb"><i style="width:${p.caught/mx*100}%"></i></div></div>`).join("");
+  const fixed=d.items.filter(x=>x.plain!==x.gold&&x.ours===x.gold).length,broke=d.items.filter(x=>x.plain===x.gold&&x.ours!==x.gold).length;
+  $("fixsum").innerHTML=`<span style="background:var(--good-soft);color:var(--good)">fixed by the rulebook: ${fixed}</span><span style="background:var(--bad-soft);color:var(--bad)">broken by it: ${broke}</span>`;
+  addEventListener("resize",()=>bars(s));
 }
 load();
 </script>

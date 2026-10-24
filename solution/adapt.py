@@ -156,7 +156,7 @@ def normalize(mined, prefix):
     for i, r in enumerate(mined.get("rules") or [], 1):
         if not isinstance(r, dict) or not r.get("rule"):
             continue
-        r["id"] = str(r.get("id") or f"{prefix}{i}")
+        r["id"] = f"{prefix}{len(rules) + 1}"  # ids are assigned here so topics never share ids
         for key in ("bad_examples", "good_examples"):
             r[key] = [str(x) for x in r.get(key) or []]
         rules.append(r)

@@ -13,7 +13,20 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-PROVIDER = os.environ.get("GEMMA_PROVIDER", "vertex")  # vertex | gemini | openai
+def _detect_provider():
+    """Explicit GEMMA_PROVIDER wins; otherwise use whichever credentials the environment provides."""
+    if os.environ.get("GEMMA_PROVIDER"):
+        return os.environ["GEMMA_PROVIDER"]
+    if os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY"):
+        return "gemini"
+    if os.environ.get("VERTEX_PROJECT") or os.environ.get("GOOGLE_CLOUD_PROJECT"):
+        return "vertex"
+    if os.environ.get("OPENAI_BASE_URL") and os.environ.get("OPENAI_API_KEY"):
+        return "openai"
+    return "gemini"
+
+
+PROVIDER = _detect_provider()  # vertex | gemini | openai
 FALLBACK = os.environ.get("GEMMA_FALLBACK", "")  # optional second provider used when the first is rate-limited
 MODEL = os.environ.get("GEMMA_MODEL", "")
 DEFAULT_MODELS = {
@@ -43,7 +56,7 @@ class _Vertex:
         import google.auth
         import google.auth.transport.requests
         from openai import OpenAI
-        self.project = os.environ["VERTEX_PROJECT"]
+        self.project = os.environ.get("VERTEX_PROJECT") or os.environ["GOOGLE_CLOUD_PROJECT"]
         location = os.environ.get("VERTEX_LOCATION", "global")
         host = "aiplatform.googleapis.com" if location == "global" else f"{location}-aiplatform.googleapis.com"
         self.creds, _ = google.auth.default(scopes=["https://www.googleapis.com/auth/cloud-platform"],
@@ -95,7 +108,8 @@ class _Gemini:
         from google import genai
         from google.genai import types
         self.types = types
-        self.client = genai.Client(api_key=os.environ["GEMINI_API_KEY"],
+        self.thinking_supported = True
+        self.client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY") or os.environ["GOOGLE_API_KEY"],
                                    http_options=types.HttpOptions(timeout=int(TIMEOUT * 1000)))
 
     def chat(self, messages, temperature, max_tokens, thinking, json_mode):
@@ -107,7 +121,17 @@ class _Gemini:
                                                max_output_tokens=max_tokens)
         if json_mode:  # response_schema times out for Gemma on this API; plain JSON mime type works
             cfg.response_mime_type = "application/json"
-        r = self.client.models.generate_content(model=model_name("gemini"), contents=contents, config=cfg)
+        # Gemma 4 on the Gemini API: thinking_level "high" = reasoning on, "minimal" = off
+        if self.thinking_supported:
+            cfg.thinking_config = self.types.ThinkingConfig(thinking_level="high" if thinking else "minimal")
+        try:
+            r = self.client.models.generate_content(model=model_name("gemini"), contents=contents, config=cfg)
+        except Exception as error:  # the API rejected the thinking config: drop it for all later calls
+            if not self.thinking_supported or "400" not in str(error) or "INVALID_ARGUMENT" not in str(error):
+                raise
+            self.thinking_supported = False
+            cfg.thinking_config = None
+            r = self.client.models.generate_content(model=model_name("gemini"), contents=contents, config=cfg)
         u = r.usage_metadata
         return r.text or "", u.prompt_token_count or 0, u.candidates_token_count or 0
 

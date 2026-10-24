@@ -78,6 +78,12 @@ def write_explanation(out_dir, topics, config):
         lines += ["## General principles (all topics)", "",
                   "Learned from all training examples at once; each is illustrated with examples from different topics.", ""]
         for rank, rule in enumerate(principles, 1):
+            if not [i for i in rule["bad_examples"] if i in all_refs]:  # borrow examples from the topic rules applying it
+                rule = dict(rule)
+                per_topic = [[r for r in topics[t]["rules"] if r.get("principle") == rule["id"]] for t in TOPICS]
+                firsts = lambda key: [next((i for r in rs for i in r[key]), None) for rs in per_topic]
+                rule["bad_examples"] = [i for i in firsts("bad_examples") if i][:2]  # one per topic
+                rule["good_examples"] = [i for i in firsts("good_examples") if i][:1]
             lines += _rule_lines(rule, rank, all_refs, all_flagged)
     for topic in TOPICS:
         art = topics[topic]

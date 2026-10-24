@@ -52,6 +52,12 @@ Model access is configured with environment variables (see [.env.example](.env.e
 | `GEMINI_API_KEY` | key from https://aistudio.google.com/apikey — serves `gemma-4-26b-a4b-it` |
 | `VERTEX_PROJECT`, `VERTEX_LOCATION` | for `vertex`; model `google/gemma-4-26b-a4b-it-maas` |
 | `GEMMA_FALLBACK` | optional second provider used automatically when the first one is rate-limited |
+| `LLM_CONCURRENCY` | simultaneous model calls (default 5) |
+
+If `GEMMA_PROVIDER` is not set, the provider is chosen from the credentials present (`GEMINI_API_KEY`/`GOOGLE_API_KEY` →
+Gemini API, `VERTEX_PROJECT` → Vertex AI, `OPENAI_BASE_URL`+`OPENAI_API_KEY` → OpenAI-compatible host).
+Note: Gemma 4 on the Gemini API is served on the free tier only (about 15 requests per minute); the client retries
+rate-limited calls with backoff, so a full `adapt` + `eval` completes, just more slowly than on Vertex AI.
 
 Local run without Docker (Python ≥ 3.10):
 
@@ -73,8 +79,12 @@ python -m solution judge-one example.json --artifacts out/artifacts
 
 * **Learned at `adapt` time from the expert's labels** — the rulebook in `artifacts/rulebook.json`, explained in
   `artifacts/EXPLANATION.md` (principles, topic knowledge, linked training examples, known boundaries).
-* **Our manual prior** — [solution/priors.json](solution/priors.json): 7 cross-topic principles and topic definitions
-  derived by reading all 60 `bad` training conversations next to similar `good` ones. Only hypotheses; the new labels decide.
+* **Our prior, from three human-in-the-loop sources** — [solution/priors.json](solution/priors.json):
+  (1) a review of all 60 `bad` public training conversations (what the expert penalizes),
+  (2) a review of all 90 `good` ones (what the expert accepts — marked `TOLERATED`, to stop over-strict rules),
+  (3) a team member's own notes on 18 bad-vs-good pairs (marked `HUMAN REVIEW`, e.g. "answer first; a simple
+  question deserves a simple answer", "apply the terms of the product the client actually has, read from their data — the rule points to the data, so it survives tariff changes"). They enter `adapt` only as hypotheses: the
+  miner keeps a prior only if the new labels support it and tags every rule with its `source`, shown in EXPLANATION.md.
 * Where the model is called: [solution/llm.py](solution/llm.py) (`chat`), prompts in
   [solution/adapt.py](solution/adapt.py) (miner) and [solution/judge.py](solution/judge.py) (judge).
 

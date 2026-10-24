@@ -1,5 +1,5 @@
 {
- "_source": "Hypotheses for the miners, not rules: adapt keeps an item only if the new training labels support it. Origins: 'bad' analysis = review of all 60 bad public training conversations; 'good' analysis = review of all 90 good ones (what the expert accepts); 'human review' = notes of the team's human reviewer on bad-vs-good pairs (when present).",
+ "_source": "Hypotheses for the miners, not rules: adapt keeps an item only if the new training labels support it. Origins: 'bad' analysis = review of all 60 bad public training conversations; 'good' analysis = review of all 90 good ones (what the expert accepts); 'human review' = notes of the team's human reviewer on bad-vs-good pairs (18 bad-vs-good pairs reviewed by a team member).",
  "_principles": [
   "Use the data you have: never ask the client for, or claim not to see, information that is in the CONTEXT (balances, debts, rates, subscription status, dates, payments), and do not send the client to look it up.",
   "Verify, do not agree: check every amount or fact the client states against the CONTEXT before confirming it, and do not give in when the client insists on something the data contradicts.",
@@ -12,7 +12,11 @@
   "TOLERATED: asking the client for information that is NOT in the CONTEXT (e.g. their monthly expenses when no spending data is given).",
   "TOLERATED: approximate figures ('about', rounding, simple-interest estimates, an approximate monthly interest), as long as they follow from the right inputs and rates.",
   "TOLERATED: format and wording choices (tables, lists, markdown, link labels in another language, a different order of the breakdown), and extra correct information such as the current partial month in addition to the full month asked for.",
-  "TOLERATED: saying honestly that the data does not show something (items bought, exact release date of a hold) instead of guessing."
+  "TOLERATED: saying honestly that the data does not show something (items bought, exact release date of a hold) instead of guessing.",
+  "HUMAN REVIEW: Answer first, proportionally: put the number or yes/no the client asked for at the start; a simple question deserves a short, simple answer; burying the answer under information the client did not ask for, or giving it in fragments, misleads.",
+  "HUMAN REVIEW: Answer the question that was asked completely (e.g. list all accounts when asked what is on the accounts, compute the remainder when asked what will remain) and point to the target action with the screen link instead of sending the client to work it out.",
+  "HUMAN REVIEW: Correct the client right away when their figure is wrong and give the right figure; never first agree and later state a different number.",
+  "HUMAN REVIEW: The assistant has the client's product terms in the CONTEXT and must apply them (tier, rate, term, restrictions, dates) instead of generic product knowledge; when terms change, the data changes, not the rule."
  ],
  "financial_position": [
   "Own funds = balances of Cuenta Veluna and savings accounts; available credit / credit limit is never added.",
@@ -23,7 +27,8 @@
  "savings": [
   "Ahorro Fijo cannot be withdrawn before its maturity date, not even with lost interest.",
   "Rates: if plus_subscription is true use rate_with_plus, otherwise the rate without plus; the annual_rate stored on the client's account wins.",
-  "Interest projections must use the correct rate and term from the CONTEXT."
+  "Interest projections must use the correct rate and term from the CONTEXT.",
+  "HUMAN REVIEW: Apply the terms of the product the client actually has, read from the client's data: the rate for their subscription tier (plus_subscription), the term, the withdrawal restriction. Never quote another tier's rate or a generic rate; the rule points to the CONTEXT fields, not to fixed numbers, so it stays valid when tariffs change."
  ],
  "spending": [
   "Spending = purchases - refunds + transfers_to_others; transfers_own are never spending.",

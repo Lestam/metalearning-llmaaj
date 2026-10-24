@@ -15,6 +15,7 @@ Pipeline:
 """
 import argparse
 import json
+import os
 import time
 from pathlib import Path
 
@@ -88,6 +89,9 @@ PRIOR HYPOTHESES. The same expert's rules for this topic, learned earlier from a
 Treat them only as hypotheses: keep a prior rule if the labels below support it (cite the supporting item_ids from
 THIS data), rewrite it if the labels show a different boundary, and drop it if the labels contradict it.
 The new data may also contain requirements the priors do not mention; find those too.
+For every rule you return, add "source": "prior confirmed by these labels" (append " (human review)" if the prior
+starts with HUMAN REVIEW) or "found in these labels" when no prior suggested it. Items marked TOLERATED describe what
+the expert accepts: use them to avoid over-strict rules, never turn them into violations.
 
 {priors}"""
 
@@ -95,6 +99,24 @@ PRIORS_PATH = Path(__file__).with_name("priors.json")
 
 
 PREFIX = {"financial_position": "F", "savings": "S", "spending": "P", "credit": "C"}
+# Free-tier Gemini API rejects very large requests (tokens per minute); cap miner prompts there.
+MINER_TOKEN_BUDGET = int(os.environ.get("MINER_TOKEN_BUDGET", "12000" if llm.PROVIDER == "gemini" else "0"))
+
+
+def examples_text(rows):
+    """All labeled examples, or - over the token budget - every bad one first, then good ones while they fit."""
+    blocks = {r["item_id"]: render(r, with_label=True) for r in rows}
+    if not MINER_TOKEN_BUDGET or sum(map(len, blocks.values())) / 3.5 <= MINER_TOKEN_BUDGET:
+        return "\n\n".join(blocks.values())
+    ordered = [r for r in rows if r["label"] == "bad"] + [r for r in rows if r["label"] == "good"]
+    chosen, used = [], 0
+    for r in ordered:
+        cost = len(blocks[r["item_id"]]) / 3.5
+        if used + cost > MINER_TOKEN_BUDGET:
+            continue
+        chosen.append(blocks[r["item_id"]])
+        used += cost
+    return "\n\n".join(chosen)
 
 
 def load_priors(topic):
@@ -104,7 +126,7 @@ def load_priors(topic):
 
 
 def mine_principles(rows, use_priors=True):
-    examples = "\n\n".join(render(r, with_label=True) for r in rows)
+    examples = examples_text(rows)
     system = PRINCIPLES_SYSTEM
     priors = load_priors("_principles") if use_priors else []
     if priors:
@@ -124,7 +146,7 @@ def principles_note(principles, topic):
 
 def mine(topic, rows, use_priors=True, principles=()):
     prefix = PREFIX[topic]
-    examples = "\n\n".join(render(r, with_label=True) for r in rows)
+    examples = examples_text(rows)
     system = MINER_SYSTEM.format(topic=topic, prefix=prefix, principles_note=principles_note(principles, topic))
     priors = load_priors(topic) if use_priors else []
     if priors:
@@ -137,7 +159,7 @@ def mine(topic, rows, use_priors=True, principles=()):
 
 def refine(topic, rows, mined, errors, round_no, principles=()):
     prefix = PREFIX[topic]
-    examples = "\n\n".join(render(r, with_label=True) for r in rows)
+    examples = examples_text(rows)
     err_text = "\n\n".join(
         f"{render(e['row'])}\nEXPERT LABEL: {e['row']['label']}\nREVIEWER LABEL: {e['pred']['label']}"
         f" (flagged: {', '.join(e['pred']['violated_rules']) or 'none'})\nREVIEWER CHECKS: "
@@ -268,7 +290,10 @@ def main():
             principles = mine_principles(rows, not args.no_priors)
             log(f"[all] mined {len(principles)} general principles: " + " | ".join(p["rule"][:60] for p in principles))
         except (ValueError, RuntimeError) as error:
-            log(f"[all] principle mining failed ({error}); falling back to per-topic rules only")
+            fallback = [p.replace("HUMAN REVIEW: ", "") for p in load_priors("_principles") if not p.startswith("TOLERATED")]
+            principles = [{"id": f"G{i}", "rule": p, "bad_examples": [], "good_examples": [],
+                           "source": "prior (principle mining failed)"} for i, p in enumerate(fallback, 1)]
+            log(f"[all] principle mining failed ({str(error)[:120]}); using {len(principles)} prior principles")
     artifacts = dict(zip(TOPICS, llm.pmap(
         lambda t: adapt_topic(t, topics[t], args.rounds, args.votes, log, not args.no_priors, principles),
         TOPICS, workers=4)))

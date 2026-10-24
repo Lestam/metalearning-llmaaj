@@ -1,164 +1,105 @@
-# A Judge That Learns from an Expert
+# Rulebook Judge — a Gemma 4 judge that learns an expert's rules
 
-Infer an expert's evaluation rules from labeled conversations, then assign one of two labels to new conversations: `good` or `bad`. Evaluate the entire conversation. Any violation of an applicable rule makes the conversation `bad`.
+Solution for **A Judge That Learns from an Expert** (Plata partner track, Hacktoberfest Hack Day Barcelona 2026).
+The original task description is kept in [CHALLENGE.md](CHALLENGE.md).
 
-**Dataset sizes.** Public: 150 training examples and 80 test examples. Final evaluation: 190 private training examples and 296 private test examples.
+## What it is and who it is for
 
-The public and private datasets cover the same four topics. The private dataset introduces additional expert requirements whose violations are not represented in the public data, so your solution must adapt again using the training set provided for the final evaluation. The hidden rules are not shared with participants.
+Teams that evaluate an AI assistant with an LLM judge, when the judge must agree with a domain expert rather than
+with "common sense". Give it a set of conversations the expert labeled `good`/`bad`; `adapt` writes down the
+expert's rules as a readable rulebook, and `eval` applies exactly that rulebook to new conversations.
+The rulebook is an artifact a support lead or a compliance officer can read, check and argue with.
 
-## Files
+## How it works
 
-```text
-data/
-  public_train.csv           # 150 labeled examples for adaptation
-  public_test.csv            # 80 labeled examples for local evaluation
-src/
-  common.py                  # data loading and format validation
-  prepare_inputs.py          # CSV -> JSONL; removes labels from prediction inputs
-  evaluate.py                # prediction validation and metric calculation
-  test_evaluation.py         # evaluation contract tests
-README.md
+```
+adapt (train.jsonl, labeled)                               eval (test.jsonl, unlabeled)
+ ├─ 0. principles: Gemma 4 reads ALL examples → cross-topic principles      ┐
+ ├─ 1. topic knowledge: per topic, definitions/product facts/computations   │  rulebook.json
+ │      each tied to a principle and to the training examples behind it     ├─► judge: principles + topic knowledge
+ ├─ 2. validate: the judge labels every training example leave-one-out      │   + expert-labeled references
+ ├─ 3. refine: Gemma 4 revises rules on its own mistakes; a revision is     │   → {checks, violated_rules, label}
+ │      kept only if leave-one-out accuracy does not drop                   │
+ └─ 4. EXPLANATION.md generated from rulebook.json (same text the judge sees)┘
 ```
 
-The public training set contains 90 `good` and 60 `bad` examples; the public test set contains 50 `good` and 30 `bad` examples. Both sets cover all four topics.
+* **Two-level rulebook.** General principles (e.g. *verify the client's claims before agreeing*, *count only money that is
+  really the client's and available*) apply to every topic; topic knowledge holds the facts and definitions the
+  principles need (e.g. *spending = purchases − refunds + transfers to other people*). New expert requirements in an
+  unseen training set are usually new instances of the same principles.
+* **Priors, then evidence.** [solution/priors.json](solution/priors.json) holds our manual analysis of the public data.
+  `adapt` passes it to the miner only as hypotheses to confirm, rewrite or drop against the new labels.
+* **Any violation ⇒ `bad`.** The judge checks each rule against the CONTEXT and every assistant turn and recomputes the
+  numbers; the label is `bad` if any applicable rule is violated.
 
-Public test labels are provided for local evaluation. During the final evaluation, your solution receives a labeled private training set and an unlabeled private test set. Adaptation starts with a clean artifacts directory for each public or private run.
+## How to run
 
-## Data format
+Docker (the interface the organizers use):
 
-CSV files use UTF-8 encoding and include a header row. Use a CSV parser: cells may contain quotes, commas, and JSON.
+```sh
+docker build -t rulebook-judge .
+# adapt: /input/train.jsonl -> /artifacts (rulebook.json, EXPLANATION.md, adapt_log.txt)
+docker run --rm --env-file .env -v "$PWD/in:/input" -v "$PWD/artifacts:/artifacts" rulebook-judge adapt
+# eval: /input/test.jsonl + /artifacts -> /output/predictions.csv
+docker run --rm --env-file .env -v "$PWD/in:/input" -v "$PWD/artifacts:/artifacts" -v "$PWD/out:/output" rulebook-judge eval
+```
 
-| Column | Contents |
+Model access is configured with environment variables (see [.env.example](.env.example)):
+
+| Variable | Meaning |
 |---|---|
-| `item_id` | An opaque, unique example identifier. |
-| `topic` | `financial_position`, `savings`, `spending`, or `credit`. |
-| `context` | A JSON object containing the source data needed to evaluate the assistant's response. |
-| `conversation` | A JSON array of messages with `role` and `content` fields. |
-| `label` | The ground-truth label: `good` or `bad`. Omitted from the final prediction input. |
-| `input_es` | A Spanish version of the complete input: JSON containing `context` and `conversation`. |
-| `input_en` | An English version of the complete input in the same format. |
+| `GEMMA_PROVIDER` | `gemini` (Gemini API key), `vertex` (Vertex AI, Application Default Credentials) or `openai` (any OpenAI-compatible host serving Gemma 4) |
+| `GEMINI_API_KEY` | key from https://aistudio.google.com/apikey — serves `gemma-4-26b-a4b-it` |
+| `VERTEX_PROJECT`, `VERTEX_LOCATION` | for `vertex`; model `google/gemma-4-26b-a4b-it-maas` |
+| `GEMMA_FALLBACK` | optional second provider used automatically when the first one is rate-limited |
 
-Translations are alternative representations of the same example, not additional rows or separate tasks. They share the same `item_id`, `topic`, and label. By default, inputs use the original `context` and `conversation`; you can select a translation when preparing inputs. Record the selected language with your results to make experiments comparable.
-
-## Quick start
-
-The scripts in `src/` require Python 3.10 or later. No external libraries or API keys are needed to run these scripts. Run the commands below from the repository root.
-
-Prepare inputs for the two stages of your solution:
+Local run without Docker (Python ≥ 3.10):
 
 ```sh
-python3 src/prepare_inputs.py --train data/public_train.csv --test data/public_test.csv --out-dir out/public_input
+pip install -r requirements.txt
+python3 src/prepare_inputs.py --train data/public_train.csv --test data/public_test.csv --out-dir out/in
+python -m solution adapt --train out/in/train.jsonl --artifacts out/artifacts
+python -m solution eval  --test out/in/test.jsonl  --artifacts out/artifacts --output out/predictions.csv
+python3 src/evaluate.py --test data/public_test.csv --predictions out/predictions.csv --out out/score.json
 ```
 
-The new directory will contain labeled `train.jsonl` and unlabeled `test.jsonl`. Both files contain only the required fields; alternative translations are not duplicated in the inputs. Add `--language es` or `--language en` to select a translation.
-
-During adaptation, use only the training set. During prediction, use the unlabeled test set and the artifacts produced during adaptation. The labeled public test set is intended for scoring and development; the final private test set will be hidden.
-
-Your solution must output **exactly one label for every test ID**. Probabilities and confidence scores are not required. For local evaluation, write predictions as CSV:
-
-```csv
-item_id,label
-FIRST_EXAMPLE_ID,good
-SECOND_EXAMPLE_ID,bad
-```
-
-The local scorer also accepts JSONL with exactly the same two fields:
-
-```json
-{"item_id":"EXAMPLE_ID","label":"good"}
-```
-
-Column names and class labels are case-sensitive. Row order does not matter. Missing, duplicate, or unknown IDs, extra fields, and labels other than `good` or `bad` are rejected with a nonzero exit code.
-
-Measure prediction quality for a complete prediction file:
+Judge one conversation live (shows the label and the violated rules):
 
 ```sh
-python3 src/evaluate.py --test data/public_test.csv --predictions predictions.csv --out out/score.json
+python -m solution judge-one example.json --artifacts out/artifacts
 ```
 
-## Submitting your solution
+## Expertise: what knowledge is built in and where it comes from
 
-**Fork this repository and push your complete solution to your team's fork.** Click **Fork** on GitHub, then clone your fork. Replace `YOUR_ACCOUNT` with the account or organization that owns your fork:
+* **Learned at `adapt` time from the expert's labels** — the rulebook in `artifacts/rulebook.json`, explained in
+  `artifacts/EXPLANATION.md` (principles, topic knowledge, linked training examples, known boundaries).
+* **Our manual prior** — [solution/priors.json](solution/priors.json): 7 cross-topic principles and topic definitions
+  derived by reading all 60 `bad` training conversations next to similar `good` ones. Only hypotheses; the new labels decide.
+* Where the model is called: [solution/llm.py](solution/llm.py) (`chat`), prompts in
+  [solution/adapt.py](solution/adapt.py) (miner) and [solution/judge.py](solution/judge.py) (judge).
 
-```sh
-git clone https://github.com/YOUR_ACCOUNT/metalearning-llmaaj.git
-cd metalearning-llmaaj
-```
+## The model and its license
 
-Commit the source code, a Dockerfile, dependency specifications, and instructions for building and running both `adapt` and `eval`. Include any files needed to reproduce the solution, and document configuration through environment variables. Keep credentials out of the repository.
+**Gemma 4 26B A4B (instruction-tuned)** by Google DeepMind, used through the Gemini API or Vertex AI.
+License: Apache 2.0 — https://ai.google.dev/gemma/apache_2 (Gemma 4 terms: https://ai.google.dev/gemma/terms).
+Every model call in this project — rule mining and judging — uses Gemma 4.
 
-After committing your solution, push it to your fork and record the exact commit:
+## Proof that it does better than the same model without it
 
-```sh
-git push origin HEAD
-git rev-parse HEAD
-```
+Public test set (80 conversations), metric `macro_topic_accuracy` from `src/evaluate.py`:
 
-Send the organizers **the URL of your fork and the commit SHA**. The organizers will evaluate that submitted version. Make sure they can access your fork and fetch the submitted commit.
+| Judge | macro topic accuracy | financial_position | savings | spending | credit |
+|---|---|---|---|---|---|
+| Plain Gemma 4 26B, generic "is this reply good?" prompt ([solution/baseline.py](solution/baseline.py)) | 0.787 | 0.773 | 0.900 | 0.609 | 0.867 |
+| Rulebook Judge (this project) | _pending_ | | | | |
 
-Your Docker image must support two commands, `adapt` and `eval`, with this interface:
+## Where it does not work
 
-| Stage | Inputs | Outputs |
-|---|---|---|
-| `adapt` | Labeled training examples at `/input/train.jsonl`. | Adaptation artifacts in `/artifacts`, including the automatically generated explanation for the jury. |
-| `eval` | Unlabeled test examples at `/input/test.jsonl` and the saved `/artifacts` directory. | `/output/predictions.csv` with exactly the columns `item_id,label`, as shown above. |
+_Filled in from the leave-one-out disagreements and public-test errors (see EXPLANATION.md, "Boundaries")._
 
-`eval` runs in a separate container, so persist everything it needs from `adapt` in `/artifacts`.
+## Credits
 
-## Final evaluation
-
-**You submit a runnable solution; the organizers run it themselves and calculate the official result.** Local scores help you develop your pipeline.
-
-1. The organizers clone your fork, check out the submitted commit, and build your Docker image using the supplied instructions.
-2. They prepare a new, labeled private training set and an unlabeled private test set. Private test labels remain with the organizers and are never passed to your solution.
-3. They run `adapt` on the private training set with a fresh, empty artifacts directory. This stage learns the expert's criteria and automatically produces both prediction artifacts and an explanation for the jury.
-4. They run `eval` in a separate container using the private test inputs and those saved artifacts. Your solution writes one `good` or `bad` prediction for every test ID.
-5. The organizers validate the prediction file and calculate `acc = macro_topic_accuracy` against the hidden labels. The score is printed and saved to a file.
-6. The jury evaluates the explanation generated during that same adaptation run using the five criteria below. The organizers combine `acc` and the jury points using **Final score = 10 × acc + 0.4 × I**.
-
-## Automated metric
-
-The automated metric is **`macro_topic_accuracy`** (`acc`): calculate accuracy separately for each of the four topics, then average those four values. Every topic has equal weight, regardless of its number of examples.
-
-```text
-acc = (accuracy_credit + accuracy_financial_position + accuracy_savings + accuracy_spending) / 4
-score = macro_topic_accuracy = acc
-```
-
-Scores range from 0 to 1; higher is better. For example, topic accuracies of 0.8, 0.7, 0.9, and 0.6 give `acc = 0.75`. Model/API cost does not affect the score, and no cost reports are required for evaluation.
-
-The bundled `src/evaluate.py` calculates this metric directly: its `macro_topic_accuracy` and `score` fields contain the same value. The organizer evaluator uses the same metric. Jury points are added separately as described below.
-
-The scorer also reports overall accuracy, Cohen's kappa, and mean kappa across topics as diagnostics. In confusion matrices, rows represent ground-truth labels and columns represent predictions; the class order is `good`, `bad`. If kappa has a zero denominator, it is reported as 0.
-
-Brier score and log loss are not calculated because solutions output labels only. The scorer evaluates one saved set of predictions without rerunning the model. Identical predictions against the same test set produce identical scores. This does not imply that the solution itself is deterministic.
-
-A difference of a few thousandths in the score is not, by itself, evidence of a statistically significant advantage.
-
-## Project defense and final score
-
-**Final score = 10 × acc + 0.4 × I**, where **acc = `macro_topic_accuracy`** and **I ∈ [0, 5]** is the sum of points in the table below.
-
-The automated component contributes up to 10 points and the jury component up to 2 points. Final scores range from 0 to 12. For example, `acc = 0.80` and `I = 4` give a final score of `10 × 0.80 + 0.4 × 4 = 9.6`.
-
-The jury evaluates an artifact automatically generated by `adapt` on a new training set. Include this explanation alongside the artifacts used for prediction. The examples below are hypothetical illustrations for a text-to-`good`/`bad` task.
-
-The interpretability score **`I` ranges from 0 to 5** and is the sum of five binary criteria:
-
-| Criterion | +1 point | 0 points |
-|---|---|---|
-| **Clear criteria** | "Unsupported claims indicate a bad response; asking for clarification when essential data are missing indicates a good response." A decision tree with understandable conditions also qualifies. | "The model assesses text quality," or a list of unexplained technical features. |
-| **Clear priorities** | "A factual error outweighs completeness." For a decision tree, the order of conditions and thresholds is visible. | Criteria are listed, but it is unclear how conflicting criteria produce the final `good`/`bad` label. |
-| **Links to training examples** | Specific texts, their expert labels, and an explanation of which criterion each example illustrates are provided. | Only invented examples are given, or a generic claim such as "the training data support this." |
-| **Clear boundaries** | "Labels for short responses are inconsistent: similar texts received different labels," supported by examples from the training set. | "The model sometimes makes mistakes," without specific conditions or examples. |
-| **Consistency with the implementation** | The described tree is actually used for prediction; the displayed rules appear in the final prompt; a table of weights matches the model. | A polished explanation is attached separately, but its connection to the working solution is not demonstrated. |
-
-**Rules for the jury:** each row receives exactly 0 or 1 point. The format is unrestricted: text, rules, a tree, a table, or a visualization. Length and literary quality earn no additional points; a classical model can receive all five points.
-
-"Common sense" here means checking whether the explanation is understandable. An unusual expert preference is acceptable when it is supported by the labels.
-
-## Check the evaluation scripts
-
-```sh
-python3 -m unittest discover -s src -p 'test_*.py'
-```
+* Task, data and evaluation scripts (`src/`, `data/`, `CHALLENGE.md`): Plata.
+* Built with the help of an AI coding assistant (Claude Code); the approach, the manual rule analysis and all results
+  were checked by the team. Libraries: `openai`, `google-genai`, `google-auth`.
+* Code in `solution/` is MIT-licensed (see [LICENSE](LICENSE)).

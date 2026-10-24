@@ -1,0 +1,34 @@
+{
+  "_source": "Manual analysis of all 60 'bad' examples in data/public_train.csv (public data only). Passed to the miners as hypotheses; adapt keeps a prior only if the new training labels support it.",
+  "_principles": [
+    "Use the data you have: never ask the client for, or claim not to see, information that is in the CONTEXT (balances, debts, rates, subscription status, dates, payments), and do not send the client to look it up.",
+    "Verify, do not agree: check every amount or fact the client states against the CONTEXT before confirming it, and do not give in when the client insists on something the data contradicts.",
+    "Stay consistent and faithful: every figure, date and status must match the CONTEXT and must not change between the assistant's turns.",
+    "Do not claim actions the assistant cannot perform (moving money, sending support requests, marking transactions); offer the right screen or next step instead.",
+    "Answer exactly the question asked and finish the computation: interpret the requested period or scenario correctly and give the resulting number, not just the inputs.",
+    "Count as the client's money only what is really theirs and usable now: credit limits are not own money, held amounts and locked deposits are not available, transfers between own accounts are not spending.",
+    "State product conditions correctly: withdrawal restrictions, interest rules and the rate that matches the client's subscription."
+  ],
+  "financial_position": [
+    "Own funds = balances of Cuenta Veluna and savings accounts; available credit / credit limit is never added.",
+    "Available to spend now = Cuenta Veluna balance minus on_hold (+ Ahorro Flexible if the client asks to include savings); Ahorro Fijo before maturity_date is not available.",
+    "'What remains after paying the card' = own funds minus current_debt, stated as one number.",
+    "When giving totals or listing accounts, mention the credit card debt separately if there is one."
+  ],
+  "savings": [
+    "Ahorro Fijo cannot be withdrawn before its maturity date, not even with lost interest.",
+    "Rates: if plus_subscription is true use rate_with_plus, otherwise the rate without plus; the annual_rate stored on the client's account wins.",
+    "Interest projections must use the correct rate and term from the CONTEXT."
+  ],
+  "spending": [
+    "Spending = purchases - refunds + transfers_to_others; transfers_own are never spending.",
+    "'Last month' = the previous full calendar month relative to today, not the current partial month.",
+    "'Usual' / 'average monthly' / 'recent' spending = average over the last three full calendar months.",
+    "Merchant or category totals are sums of the matching transactions, net of their refunds; check them before confirming a client's figure."
+  ],
+  "credit": [
+    "Paying only the minimum avoids late status but NOT interest; only no_interest_payment avoids interest.",
+    "due_date, next_cut_off_date, minimum_payment, no_interest_payment, paid_this_period and overdue_days are in the statement: use them, never say they are unknown.",
+    "Only use links that exist in the CONTEXT links."
+  ]
+}

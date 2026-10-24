@@ -80,10 +80,12 @@ def make_handler(book, examples, scores, dashboard=None):
             self.send_response(code)
             self.send_header("Content-Type", f"{ctype}; charset=utf-8")
             self.send_header("Content-Length", str(len(data)))
+            self.send_header("Cache-Control", "no-store")
             self.end_headers()
             self.wfile.write(data)
 
         def do_GET(self):
+            self.path = self.path.split("?", 1)[0].split("#", 1)[0]
             if self.path in ("/", "/index.html"):
                 return self._send(200, PAGE.read_bytes(), "text/html")
             if self.path == "/dashboard":

@@ -115,6 +115,36 @@ svg text{font-family:inherit}
 .badge{border-radius:999px;padding:1px 10px;font-weight:700;font-size:12px}
 .badge.good{background:var(--good-soft);color:var(--good)}.badge.bad{background:var(--bad-soft);color:var(--bad)}
 .err{color:var(--bad)}
+.biz{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+@media(max-width:900px){.biz{grid-template-columns:1fr 1fr}}
+.biz div{background:var(--bg);border-radius:14px;padding:12px}
+.biz b{display:block;font-size:24px;letter-spacing:-.02em;color:var(--blue)}
+.biz span{font-size:12px;color:var(--mut)}
+.omt{background:linear-gradient(135deg,#141c2b,#2a3350);color:#fff;border:0}
+.omt h2{color:#fff}
+.omtl{display:flex;gap:10px;align-items:center;margin-top:10px;font-size:14px;opacity:.8}
+.omtl span{flex:0 0 26px;height:26px;border-radius:8px;background:rgba(255,255,255,.12);display:grid;place-items:center;font-weight:800}
+.omtl.now{opacity:1;font-weight:700}.omtl.now span{background:var(--yellow);color:#141c2b}
+.card[data-d]{cursor:pointer;padding-bottom:38px;transition:transform .12s,box-shadow .12s}
+.card[data-d]:hover{transform:translateY(-2px);box-shadow:0 0 0 2px var(--blue),var(--shadow)}
+.more{position:absolute;right:16px;bottom:12px;font-size:12px;font-weight:600;color:var(--blue);z-index:2}
+.ov{position:fixed;inset:0;background:var(--bg);z-index:20;overflow:auto;display:none}
+.ov.on{display:block}
+.ovin{max-width:1100px;margin:0 auto;padding:28px 32px 60px}
+.back{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 16px;font:inherit;font-weight:600;cursor:pointer;color:var(--ink)}
+.ovh{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+.ovh h2{margin:0;font-size:28px;letter-spacing:-.02em}
+.sec{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 22px;margin-bottom:14px}
+.sec h3{margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut)}
+.sec p{margin:6px 0;font-size:15px;line-height:1.55}
+.concl{border-left:4px solid var(--blue);background:var(--blue-soft)}
+.dt{border-collapse:collapse;width:100%;font-size:14px}
+.dt th,.dt td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.dt th{color:var(--mut);font-weight:600;font-size:12px}
+.dt .n{font-variant-numeric:tabular-nums;white-space:nowrap}
+.lab{border-radius:999px;padding:1px 9px;font-weight:700;font-size:12px}
+.lab.good{background:var(--good-soft);color:var(--good)}.lab.bad{background:var(--bad-soft);color:var(--bad)}
+.src{font-size:11px;color:var(--mut)}
 </style>
 </head>
 <body>
@@ -126,7 +156,7 @@ svg text{font-family:inherit}
   <div class="switch"><a class="on" href="/dashboard">Dashboard</a><a href="/">Workbench</a></div>
 </header>
 <main id="main">
-  <section class="card hero s4"><div class="deco1"></div><div class="deco2"></div><div class="deco3"></div>
+  <section data-d="hero" class="card hero s4"><div class="deco1"></div><div class="deco2"></div><div class="deco3"></div>
     <h2>Macro accuracy <small>(expert-labeled test set)</small></h2>
     <div class="score">
       <div><div class="num" id="from">—</div><div class="numlab">Plain Gemma 4</div></div>
@@ -137,22 +167,35 @@ svg text{font-family:inherit}
     <div class="gainnote">same model, same 80 conversations, organizers' metric script</div>
     <div class="kpis"><div class="kpi"><b id="k1">—</b><span>bad replies let through</span></div><div class="kpi"><b id="k2">—</b><span>good replies wrongly rejected</span></div></div>
   </section>
-  <section class="card s5"><h2>Accuracy by topic <span class="legend"><span><i style="background:var(--grey)"></i>Plain Gemma 4</span><span><i style="background:var(--blue)"></i>Rulebook Judge</span></span></h2>
+  <section data-d="topics" class="card s5"><h2>Accuracy by topic <span class="legend"><span><i style="background:var(--grey)"></i>Plain Gemma 4</span><span><i style="background:var(--blue)"></i>Rulebook Judge</span></span></h2>
     <svg id="bars" width="100%" height="250"></svg></section>
-  <section class="card s3"><h2>What moved the score</h2><div class="hint">each step measured on the same test set</div><div class="steps" id="steps"></div></section>
-  <section class="card s4"><h2>Where the errors are</h2><div class="hint">rows = expert label · columns = verdict</div>
+  <section data-d="steps" class="card s3"><h2>What moved the score</h2><div class="hint">each step measured on the same test set</div><div class="steps" id="steps"></div></section>
+  <section data-d="errors" class="card s4"><h2>Where the errors are</h2><div class="hint">rows = expert label · columns = verdict</div>
     <div class="cm" id="cm"></div><div class="cmnote" id="cmnote"></div></section>
-  <section class="card s5"><h2>Learned rulebook at a glance</h2><div class="hint">general principles learned by Gemma 4 · bad test replies each one caught</div><div class="prows" id="prows"></div></section>
-  <section class="card s3"><h2>⚠️ Where it still fails</h2><ol class="fails">
+  <section data-d="rulebook" class="card s5"><h2>Learned rulebook at a glance</h2><div class="hint">general principles learned by Gemma 4 · bad test replies each one caught</div><div class="prows" id="prows"></div></section>
+  <section data-d="fails" class="card s3"><h2>⚠️ Where it still fails</h2><ol class="fails">
     <li>Arithmetic-heavy spending totals: the judge sometimes recomputes a correct answer wrongly.</li>
     <li>Most remaining errors are good replies rejected, not bad replies accepted.</li>
     <li>Defects absent from the training labels can be missed.</li></ol></section>
-  <section class="card s12"><h2>Every test conversation <small id="total"></small><span class="fixsum" id="fixsum"></span></h2>
+  <section data-d="business" class="card s7"><h2>💼 Business case</h2><div class="hint">measured on today's runs · price is an estimate</div>
+    <div class="biz">
+      <div><b>$0.002</b><span>per judged conversation<br>(~8.2k in / 1.2k out tokens)</span></div>
+      <div><b>$0.55</b><span>per full <code>adapt</code> on 150 labels<br>(~20 min, mostly rate limits)</span></div>
+      <div><b>53% → 10%</b><span>bad replies a reviewer<br>would let through</span></div>
+      <div><b>~33 h → ~$2</b><span>1,000 conversations: expert<br>time* vs Gemma</span></div>
+    </div><div class="hint" style="margin-top:8px">* assumption: ~2 min of expert time per conversation</div></section>
+  <section data-d="next" class="card s5 omt"><h2>✨ One more thing</h2>
+    <div class="omtl"><span>1</span>Deterministic checks — code recomputes the figures, no model</div>
+    <div class="omtl now"><span>2</span>Rulebook judge — what we built today</div>
+    <div class="omtl"><span>3</span>Distilled small Gemma — 100% of traffic in ms and cents</div>
+    <div class="omtl"><span>4</span>Expert labels only where layers disagree</div></section>
+  <section data-d="tiles" class="card s12"><h2>Every test conversation <small id="total"></small><span class="fixsum" id="fixsum"></span></h2>
     <div class="hint" style="margin-top:4px">each tile = one conversation · left half plain Gemma 4, right half Rulebook Judge · green = agrees with the expert, red = disagrees · hover for details</div>
     <h2 style="display:none">
     <span class="legend"><span><i style="background:var(--grey)"></i>Plain Gemma 4 (left)</span><span><i style="background:var(--blue)"></i>Rulebook Judge (right)</span><span><i style="background:#7fd3a3"></i>agrees with expert</span><span><i style="background:#f2847b"></i>disagrees</span></span></h2>
     <div class="tiles" id="tiles"></div></section>
 </main>
+<div class="ov" id="ov"><div class="ovin"><div class="ovh"><button class="back" id="back">← Dashboard</button><h2 id="ovt"></h2></div><div id="ovb"></div></div></div>
 <div class="tip" id="tip"></div>
 <script>
 const $=id=>document.getElementById(id);
@@ -214,8 +257,76 @@ function tiles(items){
       tip.innerHTML=`<div class="q">💬 Client: ${esc(x.question)}</div><div class="v">Expert ${b(x.gold)}</div><div class="v">Plain Gemma 4 ${b(x.plain)}</div><div class="v">Rulebook Judge ${b(x.ours)}</div>${x.rules.length?`<div class="hint" style="margin-top:6px">violated: ${esc(x.rules.join(", "))}</div>`:""}`;};
     el.onmouseleave=()=>tip.style.display="none";});
 }
+let D=null,ST=null;
+const lb=l=>`<span class="lab ${l}">${(l||"—").toUpperCase()}</span>`;
+const sec=(h,body,cls="")=>`<div class="sec ${cls}"><h3>${h}</h3>${body}</div>`;
+function convTable(list){return `<table class="dt"><tr><th>Topic</th><th>Client asked</th><th>Expert</th><th>Plain</th><th>Rulebook</th><th>Rules flagged</th></tr>`+
+  list.map(x=>`<tr><td>${esc(x.topic.replace("_"," "))}</td><td>${esc(x.question)}</td><td>${lb(x.gold)}</td><td>${lb(x.plain)}</td><td>${lb(x.ours)}</td><td class="n">${esc(x.rules.join(", "))}</td></tr>`).join("")+`</table>`;}
+function detail(key){
+  const s=D.scores,[b,o]=s.rows,c=D.confusion,it=D.items,nb=c.plain.bad.good+c.plain.bad.bad,ng=c.plain.good.good+c.plain.good.bad;
+  const T={
+  hero:["Same model, much closer to the expert",
+    sec("What it shows",`<p><b>Macro accuracy</b> = accuracy computed separately for each of the four topics, then averaged — the organizers' official metric, so a small topic counts as much as a big one.</p><p>Both columns use the <b>same Gemma 4 26B</b>. "Plain" asks it the generic question "is this bank-assistant reply good or bad?". "Rulebook Judge" gives it the rulebook that <code>adapt</code> learned from the 150 expert-labeled training conversations, plus the 10 most similar labeled examples.</p>`)+
+    sec("How we measured",`<p>80 expert-labeled public test conversations the learning never saw, scored with the organizers' <code>evaluate.py</code>. Plain Gemma: <b>${b.macro.toFixed(3)}</b>. Rulebook Judge: <b>${o.macro.toFixed(3)}</b> in this run; a second full <code>adapt</code> run with extended priors gave <b>0.887</b>. With 80 conversations a 2-point gap is two conversations — treat 0.887–0.911 as one result.</p>`)+
+    sec("What changed in practice",`<p>Bad replies let through: <b>${c.plain.bad.good} of ${nb}</b> → <b>${c.ours.bad.good} of ${nb}</b>. Good replies wrongly rejected: <b>${c.plain.good.bad} of ${ng}</b> → <b>${c.ours.good.bad} of ${ng}</b>.</p>`)+
+    sec("Conclusion",`<p>The gap between a generic judge and the bank's expert is mostly <b>unstated rules</b>. Once Gemma writes them down from the expert's labels and applies them, the same model agrees with the expert far more often — and the rules are readable, so compliance can check and edit them.</p>`,"concl")],
+  topics:["Every topic improves — spending the most",
+    sec("Per topic",`<table class="dt"><tr><th>Topic</th><th>Test conversations</th><th>Plain Gemma 4</th><th>Rulebook Judge</th><th>Change</th></tr>`+
+      s.topics.map((t,i)=>`<tr><td>${esc(t.replace("_"," "))}</td><td class="n">${it.filter(x=>x.topic===t).length}</td><td class="n">${b.by_topic[i].toFixed(3)}</td><td class="n"><b>${o.by_topic[i].toFixed(3)}</b></td><td class="n" style="color:var(--good);font-weight:700">+${(o.by_topic[i]-b.by_topic[i]).toFixed(3)}</td></tr>`).join("")+`</table>`)+
+    sec("Why spending gains most",`<p>Spending replies are judged by <b>definitions</b> a generic reviewer does not know: spending = purchases − refunds + transfers to other people; transfers between the client's own accounts are not spending; "last month" is the previous full month; "usual" means the average of the last three full months. Plain Gemma accepts plausible-looking totals; the rulebook makes the judge recompute them.</p>`)+
+    sec("Why credit and savings reach 1.000",`<p>Their decisive rules are <b>product facts</b>: paying only the minimum does not stop interest; Ahorro Fijo cannot be withdrawn before maturity; the rate must match the client's Veluna+ status. Once stated, they are applied consistently.</p>`)+
+    sec("Conclusion",`<p>The weakest topic, financial position, is about <b>completeness</b> (every account, the card debt, held money) — the next prior we added; it is where the judge still disagrees most.</p>`,"concl")],
+  steps:["Each improvement was measured, not assumed",
+    sec("The steps",`<table class="dt"><tr><th>Step</th><th>Macro</th><th>Change</th><th>What we changed and why it helped</th></tr>`+
+      [[0,"A generic prompt: the model judges by common sense and is too lenient."],
+       [1,"adapt mines a two-level rulebook (cross-topic principles + topic knowledge) from the labels and validates it leave-one-out."],
+       [2,"The judge reasons before labeling, so it recomputes the figures the assistant stated instead of trusting them."],
+       [3,"Told to judge substance, not wording: an offer to help is not a claimed action; a correct reply phrased differently is fine."],
+       [4,"Only the 10 most similar labeled examples go into the prompt instead of the whole topic: less noise, 2–4× fewer tokens."]]
+      .map(([i,t])=>{const x=(s.ladder||[])[i];return x?`<tr><td><b>${esc(x.step)}</b></td><td class="n">${x.macro.toFixed(3)}</td><td class="n" style="color:var(--good);font-weight:700">${i?"+"+(x.macro-s.ladder[i-1].macro).toFixed(3):""}</td><td>${t}</td></tr>`:""}).join("")+`</table>`)+
+    sec("Conclusion",`<p>The rulebook gives the first jump; making the judge <b>check</b> (reason, recompute) and <b>not over-react</b> (substance over wording) gives as much again.</p>`,"concl")],
+  errors:["Plain Gemma is lenient; the rulebook makes it strict where the expert is strict",
+    sec("Confusion",`<p>Plain Gemma: <b>${c.plain.bad.good}</b> bad replies accepted, <b>${c.plain.good.bad}</b> good rejected. Rulebook Judge: <b>${c.ours.bad.good}</b> bad accepted, <b>${c.ours.good.bad}</b> good rejected.</p><p>For a bank, a bad reply that passes review (wrong figure, wrong product promise) is the expensive error — it reaches clients.</p>`)+
+    sec("Where the Rulebook Judge disagrees with the expert",convTable(it.filter(x=>x.ours!==x.gold)))+
+    sec("Conclusion",`<p>Remaining errors are mostly <b>good replies rejected</b> — the judge is now slightly too strict, mainly on arithmetic done on a different but consistent basis. The latest code tells it explicitly that such a basis is not an error.</p>`,"concl")],
+  rulebook:["The rulebook Gemma learned — readable, linked to the data",
+    sec("General principles (all topics)",`<table class="dt"><tr><th>Id</th><th>Principle</th><th>Bad test replies caught</th></tr>`+D.principles.map(p=>`<tr><td><b>${esc(p.id)}</b></td><td>${esc(p.rule)}</td><td class="n">${p.caught}</td></tr>`).join("")+`</table>`)+
+    (ST?Object.entries(ST.rulebook).map(([t,a])=>sec(`Topic knowledge · ${t.replace("_"," ")} · leave-one-out ${a.loo!=null?(a.loo*100).toFixed(0)+"%":""}`,
+      `<table class="dt"><tr><th>Id</th><th>Rule</th><th>Applies</th></tr>`+a.rules.map(r=>`<tr><td><b>${esc(r.id)}</b></td><td>${esc(r.rule)}${r.source?`<div class="src">${esc(r.source)}</div>`:""}</td><td class="n">${esc(r.principle||"")}</td></tr>`).join("")+`</table>`)).join(""):"")+
+    sec("Where it comes from",`<p>Gemma 4 writes the rules from the labels; our human review (all 60 bad and 90 good training conversations, plus a team member's notes on 18 bad-vs-good pairs) enters only as <b>hypotheses</b> that the labels must confirm. Every rule in EXPLANATION.md links to the training conversations behind it, and the same text is what the judge sees.</p>`,"concl")],
+  fails:["Where it still fails — and why",
+    sec("1 · Arithmetic-heavy spending totals",`<p>Merchant or category totals with refunds and multi-month averages: the judge sometimes recomputes a correct reply wrongly.</p>`)+
+    sec("2 · Too strict on good replies",`<p>${c.ours.good.bad} of ${ng} good replies rejected. Typical cause: a correct computation on a different basis (available vs gross with the hold disclosed).</p>`)+
+    sec("3 · Defects never shown in training",`<p>The rulebook knows only what the expert's labels show; a brand-new kind of defect can pass.</p>`)+
+    sec("The conversations it gets wrong",convTable(it.filter(x=>x.ours!==x.gold)))+
+    sec("Next",`<p>Deterministic checks in code for the arithmetic (no model), the rulebook judge for interpretation, the expert only where the two disagree.</p>`,"concl")],
+  business:["What this means for the business",
+    sec("Measured today",`<table class="dt"><tr><th>What</th><th>Measured</th><th>Cost (estimate)</th></tr>
+      <tr><td>Judge one conversation (Rulebook Judge, reasoning on)</td><td class="n">~8.2k input + ~1.2k output tokens, ~1–5 s</td><td class="n"><b>≈ $0.002</b></td></tr>
+      <tr><td>Learn the rulebook (<code>adapt</code>, 150 labeled conversations)</td><td class="n">~2.25M input + ~0.35M output tokens, ~20 min</td><td class="n"><b>≈ $0.55</b></td></tr>
+      <tr><td>Judge 1,000 conversations</td><td class="n">~8.2M + ~1.2M tokens</td><td class="n"><b>≈ $2</b></td></tr></table>
+      <p class="src">Token counts measured in our runs (eval on 80 conversations: 654k input, 95k output). Price: Gemma 4 26B on Vertex AI at ~$0.15 / $0.60 per 1M input / output tokens, as listed by third-party price trackers — an estimate, not a Google quote. Gemma is open-weight: self-hosting can cost less.</p>`)+
+    sec("Quality that matters to a bank",`<p>A reviewer relying on the plain judge would let <b>${c.plain.bad.good} of ${nb} (${Math.round(c.plain.bad.good/nb*100)}%)</b> bad replies through — wrong figures, wrong product promises reaching clients. With the rulebook: <b>${c.ours.bad.good} of ${nb} (${Math.round(c.ours.bad.good/nb*100)}%)</b>.</p>`)+
+    sec("Expert time (illustration)",`<p><b>Assumption:</b> an expert spends ~2 minutes per conversation. Reviewing 1,000 conversations by hand ≈ <b>33 hours</b>; the Rulebook Judge does it for ≈ <b>$2</b> in minutes. The expert's time moves from labeling everything to labeling ~150–200 examples per product change and reviewing the cases the judge is unsure about.</p>`)+
+    sec("When the product changes",`<p>New tariff, new rule: the expert labels a fresh sample, <code>adapt</code> re-learns the rulebook in ~20 minutes for ≈ $0.55, and the rules that changed are visible in EXPLANATION.md. No retraining, no black box — compliance can read every rule the judge applies.</p>`,"concl")],
+  next:["One more thing: a layered judge",
+    sec("Today we showed",`<p>The expert's rules can be <b>extracted and verified automatically</b> from a few hundred labels — and a small open model applies them almost as the expert does.</p>`)+
+    `<div class="sec"><h3>Next: four layers, each doing what it is best at</h3><table class="dt"><tr><th>#</th><th>Layer</th><th>What it does</th><th>Defects it closes</th></tr>
+      <tr><td>1</td><td><b>Deterministic checks</b><div class="src">code, no model</div></td><td>Gemma extracts the figures the assistant stated; code recomputes them from the client data — spending = purchases − refunds + transfers to others, own funds exclude credit, holds subtracted, due date / rate / Veluna+ read from the JSON.</td><td>arithmetic · credit as money · holds · tier rate, minimum payment, Fijo terms · "can't see the date"</td></tr>
+      <tr style="background:var(--blue-soft)"><td>2</td><td><b>Rulebook judge</b><div class="src">Gemma 4 + learned rules — what we built today</div></td><td>Judgements that need interpretation: which period the client meant, an offer vs a claimed action, a complete vs fragmentary picture, agreeing with a wrong claim. Versioned, editable by compliance.</td><td>period basis · agreeing with wrong claims · incomplete picture · figures drifting between turns</td></tr>
+      <tr><td>3</td><td><b>Distilled classifier</b><div class="src">fine-tune, later</div></td><td>When the rulebook is stable and thousands of verdicts exist: distil it into a small open model (Gemma E2B/E4B) for 100% of traffic in milliseconds and cents; the rulebook judge stays on a 5% sample to catch drift. Fine-tuning compiles the rulebook, it does not replace it.</td><td>all, at scale</td></tr>
+      <tr><td>4</td><td><b>Active labelling loop</b></td><td>The expert labels only where layers disagree or the judge is unsure — 5–10× less expert time, every label feeds the next <code>adapt</code>.</td><td>keeps all of the above current as the product changes</td></tr></table></div>`+
+    sec("Closing",`<p style="font-size:18px"><b>Today we showed the expert's rules can be extracted and verified automatically. Next: half of them should need no model at all, and the other half should cost one Gemma call for the whole stream.</b></p>`,"concl")],
+  tiles:["Conversation by conversation",
+    sec(`Fixed by the rulebook — plain Gemma wrong, Rulebook Judge right (${it.filter(x=>x.plain!==x.gold&&x.ours===x.gold).length})`,convTable(it.filter(x=>x.plain!==x.gold&&x.ours===x.gold)))+
+    sec(`Broken by it — plain Gemma right, Rulebook Judge wrong (${it.filter(x=>x.plain===x.gold&&x.ours!==x.gold).length})`,convTable(it.filter(x=>x.plain===x.gold&&x.ours!==x.gold)))+
+    sec("Conclusion",`<p>Most fixes are <b>bad replies plain Gemma accepted</b>: minimum payment "avoids interest", Fijo "can be withdrawn", spending totals with own transfers or without refunds.</p>`,"concl")]};
+  const [title,body]=T[key];$("ovt").textContent=title;$("ovb").innerHTML=body;$("ov").classList.add("on");$("ov").scrollTop=0;location.hash=key;
+}
+function closeDetail(){$("ov").classList.remove("on");history.replaceState(null,"",location.pathname);}
 async function load(){
-  const d=await (await fetch("/api/dashboard")).json();
+  const d=await (await fetch("/api/dashboard")).json();D=d;
+  try{ST=await (await fetch("/api/state")).json();}catch(e){}
   if(d.error){$("main").innerHTML=`<p class="err">${esc(d.error)}</p>`;return;}
   const s=d.scores,[b,o]=s.rows;$("n").textContent=d.items.length;
   $("from").textContent=b.macro.toFixed(3);$("to").textContent=o.macro.toFixed(3);$("gain").textContent=`+${((o.macro-b.macro)*100).toFixed(1)} pts`;
@@ -228,6 +339,10 @@ async function load(){
   const fixed=d.items.filter(x=>x.plain!==x.gold&&x.ours===x.gold).length,broke=d.items.filter(x=>x.plain===x.gold&&x.ours!==x.gold).length;
   $("fixsum").innerHTML=`<span style="background:var(--good-soft);color:var(--good)">fixed by the rulebook: ${fixed}</span><span style="background:var(--bad-soft);color:var(--bad)">broken by it: ${broke}</span>`;
   addEventListener("resize",()=>bars(s));
+  document.querySelectorAll(".card[data-d]").forEach(el=>{el.insertAdjacentHTML("beforeend",'<span class="more">Open details →</span>');
+    el.addEventListener("click",e=>{if(!e.target.closest(".tile"))detail(el.dataset.d);});});
+  $("back").onclick=closeDetail;addEventListener("keydown",e=>{if(e.key==="Escape")closeDetail();});
+  if(location.hash.slice(1))detail(location.hash.slice(1));
 }
 load();
 </script>

@@ -25,6 +25,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--test", required=True)
     ap.add_argument("--out", default="out/baseline.json")
+    ap.add_argument("--predictions", default="", help="also write item_id,label CSV")
     args = ap.parse_args()
     rows = load(args.test, require_labels=True)
     labels = llm.pmap(judge, rows)
@@ -34,6 +35,9 @@ def main():
               "model": llm.model_name(), "provider": llm.PROVIDER, "stats": llm.STATS}
     print(json.dumps(result, indent=1))
     from pathlib import Path
+    if args.predictions:
+        Path(args.predictions).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.predictions).write_text("item_id,label\n" + "".join(f"{k},{v}\n" for k, v in preds.items()))
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     Path(args.out).write_text(json.dumps(result, indent=1))
 

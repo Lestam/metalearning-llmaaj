@@ -22,7 +22,12 @@
   "Own funds = balances of Cuenta Veluna and savings accounts; available credit / credit limit is never added.",
   "Available to spend now = Cuenta Veluna balance minus on_hold (+ Ahorro Flexible if the client asks to include savings); Ahorro Fijo before maturity_date is not available.",
   "'What remains after paying the card' = own funds minus current_debt, stated as one number.",
-  "When giving totals or listing accounts, mention the credit card debt separately if there is one."
+  "When giving totals or listing accounts, mention the credit card debt separately if there is one.",
+  "Complete picture (checked on EVERY turn that answers 'what do I have / which accounts / how much money'): name every product in CONTEXT with its own balance or debt - each Cuenta Veluna (including named/alias ones), Ahorro Flexible, Ahorro Fijo (with the locked-until maturity_date note if it has a balance), AND the Credito Veluna current_debt when it is > 0. Saying 'the other accounts are empty' without naming them, or giving a total of own funds while omitting an existing credit card debt, is a violation (the debt is part of the client's position even when the question is 'what is on my accounts').",
+  "Held money (on_hold > 0 on a Cuenta Veluna): whenever the assistant states how much money the client has NOW, the held amount must be either subtracted or named explicitly ('16,900 of which 3,100 held, 13,800 available'); stating the gross balance as money the client has, with no mention of the hold, is a violation.",
+  "Affordability ('can I afford X', 'is X within my means'): decide only from own usable funds (Cuenta Veluna minus on_hold, plus Ahorro Flexible, optionally minus current_debt); saying the client 'can afford' something because the credit line covers it is a violation, even if the own-funds figure was given first.",
+  "TOLERATED (accounting basis): the expert accepts any arithmetically consistent basis as long as the hold and the debt are disclosed - 'own funds' may be stated as available (balance minus on_hold) or as gross with the held part named; 'net' = that own-funds figure minus current_debt; Ahorro Fijo may be reported inside a 'total own funds' figure if it is labelled as locked, or kept separate. Do not flag a correct computation on one of these bases as a math error because another basis would give a different number.",
+  "TOLERATED: a short answer to a short question ('how much is on Cuenta Veluna?' -> one number) is good; the completeness requirement applies to questions about the whole position, not to follow-ups about one account."
  ],
  "savings": [
   "Ahorro Fijo cannot be withdrawn before its maturity date, not even with lost interest.",

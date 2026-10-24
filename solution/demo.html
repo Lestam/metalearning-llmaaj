@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rulebook Judge</title>
+<style>
+:root{
+  --bg:#f3f5f9;--card:#fff;--ink:#16202e;--mut:#5f6b7a;--line:#e3e8ef;--accent:#1565e0;--accent-soft:#e8f0fd;
+  --good:#1a7f45;--good-bg:#eaf7ef;--good-dot:#22a55a;--bad:#c4271c;--bad-bg:#fdeceb;--bad-dot:#e5443a;
+  --bubble-u:#eef1f5;--bubble-a:#e9f6ee;--shadow:0 1px 2px rgba(16,32,46,.05),0 4px 16px rgba(16,32,46,.05)}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0f141b;--card:#171e27;--ink:#e8edf3;--mut:#9aa6b4;--line:#263140;--accent:#5b9bff;--accent-soft:#1b2a40;
+  --good:#5fd18c;--good-bg:#14291e;--good-dot:#34c26f;--bad:#ff8a80;--bad-bg:#33191a;--bad-dot:#ff6b60;
+  --bubble-u:#1d2531;--bubble-a:#16271e;--shadow:none}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,-apple-system,system-ui,"Segoe UI",sans-serif}
+header{background:var(--card);border-bottom:1px solid var(--line);padding:16px 32px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{width:40px;height:40px;border-radius:10px;background:var(--accent);display:grid;place-items:center;color:#fff}
+h1{margin:0;font-size:24px;letter-spacing:-.01em}
+.tagline{color:var(--mut);font-size:14px}
+.badge{margin-left:8px;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:500;white-space:nowrap}
+nav{margin-left:auto;display:flex;gap:28px}
+nav button{border:0;background:none;color:var(--mut);font:inherit;font-size:15px;padding:10px 0;cursor:pointer;border-bottom:2px solid transparent}
+nav button.on{color:var(--accent);font-weight:600;border-bottom-color:var(--accent)}
+main{max-width:1440px;margin:0 auto;padding:24px 32px 110px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:20px}
+@media(max-width:960px){.grid{grid-template-columns:1fr}nav{margin-left:0}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+.lbl{font-size:13px;color:var(--ink);font-weight:500;margin:0 0 6px}
+select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.chip{border:0;background:var(--bubble-u);color:var(--ink);border-radius:999px;padding:7px 16px;font:inherit;font-size:14px;cursor:pointer}
+.chip.on{background:var(--accent);color:#fff}
+.turn{display:grid;grid-template-columns:44px 1fr 22px;gap:12px;margin-bottom:14px;align-items:start}
+.avatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);cursor:pointer;user-select:none}
+.turn.assistant .avatar{background:var(--bubble-a);color:var(--good)}
+.bubble{border-radius:14px;padding:10px 14px;background:var(--bubble-u)}
+.turn.assistant .bubble{background:var(--bubble-a)}
+.who{font-size:13px;color:var(--mut);margin-bottom:2px}
+.bubble textarea{border:0;background:transparent;padding:0;resize:vertical;min-height:44px;font-size:15px}
+.x{border:0;background:none;color:var(--mut);cursor:pointer;font-size:18px;padding:8px 0}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--accent);border-radius:10px;padding:8px 16px;font:inherit;font-size:14px;cursor:pointer}
+details{border:1px solid var(--line);border-radius:10px;margin:14px 0}
+summary{padding:12px 14px;cursor:pointer;color:var(--ink);font-size:14px;list-style:none;display:flex;justify-content:space-between}
+summary::after{content:"⌄";color:var(--mut)}
+details[open] summary::after{content:"⌃"}
+details textarea{border:0;border-top:1px solid var(--line);border-radius:0 0 10px 10px;min-height:180px;font:12px/1.45 ui-monospace,Menlo,monospace}
+.primary{width:100%;border:0;border-radius:10px;background:var(--accent);color:#fff;font:inherit;font-weight:600;font-size:16px;padding:14px;cursor:pointer;display:flex;justify-content:center;gap:10px}
+.primary:disabled{opacity:.6;cursor:wait}
+.verdicts{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.vcard{border:1px solid var(--line);border-radius:14px;padding:14px}
+.vtitle{font-size:14px;font-weight:500;margin-bottom:10px;min-height:42px}
+.vbox{border-radius:12px;padding:16px;background:var(--bubble-u);min-height:128px}
+.vbox.good{background:var(--good-bg)}.vbox.bad{background:var(--bad-bg)}
+.vlab{display:flex;align-items:center;gap:12px;font-size:36px;font-weight:800;letter-spacing:.01em}
+.dot{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:22px;font-weight:700}
+.vbox.good .vlab{color:var(--good)}.vbox.good .dot{background:var(--good-dot)}
+.vbox.bad .vlab{color:var(--bad)}.vbox.bad .dot{background:var(--bad-dot)}
+.vbox.idle .vlab{color:var(--mut);font-size:20px;font-weight:500}
+.vnote{color:var(--mut);font-size:14px;margin-top:8px}
+.expert{border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin:14px 0;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.expert b.good{color:var(--good)}.expert b.bad{color:var(--bad)}
+.agree{display:flex;align-items:center;gap:8px;font-size:14px}
+.agree .dot{width:22px;height:22px;font-size:13px}
+.agree.yes .dot{background:var(--good-dot)}.agree.no .dot{background:var(--bad-dot)}
+.vtitle2{font-weight:600;margin:6px 0 10px}
+.viol{background:var(--bad-bg);border:1px solid color-mix(in srgb,var(--bad) 30%,transparent);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.vhead{display:flex;gap:12px;align-items:center;font-weight:600}
+.rid{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad);border-radius:8px;padding:3px 10px;font-weight:700;font-size:14px}
+.evl{color:var(--mut);font-size:13px;margin:10px 0 6px}
+.quote{background:color-mix(in srgb,var(--card) 70%,transparent);border-left:3px solid var(--line);border-radius:8px;padding:10px 14px;font-style:italic}
+.err{color:var(--bad);margin-top:10px}
+.foot{position:fixed;left:0;right:0;bottom:0;background:var(--accent-soft);padding:12px 32px}
+.foot div{max-width:1376px;margin:0 auto;background:var(--card);border-radius:12px;padding:12px 18px;display:flex;align-items:center;gap:12px;font-size:17px;box-shadow:var(--shadow);cursor:pointer}
+.foot .n{font-weight:700;color:var(--mut)}.foot .n.hi{color:var(--accent)}
+.rule{padding:12px 0;border-bottom:1px solid var(--line)}
+.rule .rid{background:var(--accent-soft);color:var(--accent)}
+.tag{font-size:12px;color:var(--mut);margin-top:4px}
+h2{font-size:18px;margin:24px 0 6px}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:12px;border-bottom:1px solid var(--line)}
+td.num{font-variant-numeric:tabular-nums}
+.bar{height:8px;border-radius:4px;background:var(--accent)}
+.bar.base{background:var(--mut);opacity:.45}
+.hidden{display:none}
+.hint{color:var(--mut);font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 0 1 2-2h5v16H6a2 2 0 0 0-2 2z"/><path d="M20 5a2 2 0 0 0-2-2h-5v16h5a2 2 0 0 1 2 2z"/></svg></div>
+    <div><h1>Rulebook Judge</h1><div class="tagline">Gemma 4 learns an expert's rules — and judges new conversations the same way</div></div>
+  </div>
+  <span class="badge" id="model">✦ Gemma 4</span>
+  <a href="/dashboard" style="margin-left:12px;border:1px solid var(--line);border-radius:999px;padding:6px 14px;color:var(--ink);text-decoration:none;font-size:13px;font-weight:600">◐ Dashboard</a>
+  <nav><button class="on" data-tab="try">Try it</button><button data-tab="rules">Learned rulebook</button><button data-tab="results">Results</button></nav>
+</header>
+<main>
+<section id="tab-try" class="grid">
+  <div class="card">
+    <p class="lbl">Start from a test conversation</p>
+    <select id="preset"><option value="">Write your own conversation</option></select>
+    <p class="lbl" style="margin-top:16px">Topic</p>
+    <div class="chips" id="topics"></div>
+    <div id="turns"></div>
+    <div class="row"><button class="btn" id="addUser">+ client</button><button class="btn" id="addAsst">+ assistant</button></div>
+    <details><summary>&lt;/&gt;&nbsp; Client data the assistant had (JSON)</summary><textarea id="context">{}</textarea></details>
+    <button class="primary" id="run"><span id="runText">Judge this conversation</span><span>→</span></button>
+    <div class="err" id="error"></div>
+  </div>
+  <div class="card">
+    <div class="verdicts">
+      <div class="vcard"><div class="vtitle">Plain Gemma 4 — same model, generic prompt</div><div class="vbox idle" id="plain"></div></div>
+      <div class="vcard"><div class="vtitle">Rulebook Judge — same model + learned rules</div><div class="vbox idle" id="ours"></div></div>
+    </div>
+    <div class="expert hidden" id="expert"></div>
+    <div id="violations"></div>
+  </div>
+</section>
+<section id="tab-rules" class="card hidden"><div id="rulebook"></div></section>
+<section id="tab-results" class="card hidden"><div id="results"></div></section>
+</main>
+<div class="foot"><div id="foot"></div></div>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const TOPICS=["credit","savings","spending","financial_position"];
+const NOTES={plain:{good:"Looks fine to a generic reviewer.",bad:"A generic reviewer objects to this reply."},
+             ours:{good:"No learned expert rule is violated.",bad:"The reply violates the expert's rules."}};
+let state={},topic="credit",current=null;
+function renderTopics(){$("topics").innerHTML=TOPICS.map(t=>`<button class="chip${t===topic?" on":""}" data-t="${t}">${t.replace("_"," ")}</button>`).join("");
+  document.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{topic=b.dataset.t;renderTopics();});}
+function turnRow(role,content){
+  const d=document.createElement("div");d.className="turn "+role;d.dataset.role=role;
+  const icon=role==="user"?'<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0z"/></svg>'
+                           :'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/></svg>';
+  d.innerHTML=`<div class="avatar" title="click to switch role">${icon}</div><div class="bubble"><div class="who">${role==="user"?"Client":"Assistant"}</div><textarea rows="2"></textarea></div><button class="x" title="remove">×</button>`;
+  d.querySelector("textarea").value=content||"";
+  d.querySelector(".x").onclick=()=>d.remove();
+  d.querySelector(".avatar").onclick=()=>{const t=d.querySelector("textarea").value;d.replaceWith(turnRow(role==="user"?"assistant":"user",t,true));};
+  if(arguments[2])return d;$("turns").appendChild(d);return d;
+}
+function setConversation(conv){$("turns").innerHTML="";conv.forEach(m=>turnRow(m.role,m.content));}
+function verdict(id,label){const box=$(id);
+  if(!label){box.className="vbox idle";box.innerHTML=`<div class="vlab">Waiting…</div><div class="vnote">Run the judge to see the verdict.</div>`;return;}
+  box.className="vbox "+label;
+  box.innerHTML=`<div class="vlab"><span class="dot">${label==="good"?"✓":"✕"}</span>${label.toUpperCase()}</div><div class="vnote">${NOTES[id][label]}</div>`;}
+function expertRow(ours){const e=current&&current.label;const el=$("expert");
+  if(!e){el.classList.add("hidden");return;}el.classList.remove("hidden");
+  const agree=ours?`<span class="agree ${ours===e?"yes":"no"}"><span class="dot">${ours===e?"✓":"✕"}</span>Rulebook Judge ${ours===e?"agrees":"disagrees"} with the expert</span>`:"";
+  el.innerHTML=`<span style="font-size:18px;font-weight:600">Plata expert's label: <b class="${e}">${e.toUpperCase()}</b></span>${agree}`;}
+async function load(){
+  state=await (await fetch("/api/state")).json();
+  $("model").textContent=`✦ ${state.model.includes("gemma-4-26b")?"Gemma 4 26B":state.model} · ${state.provider==="vertex"?"Vertex AI":state.provider==="gemini"?"Gemini API":state.provider}`;
+  state.examples.forEach((e,i)=>{const o=document.createElement("option");o.value=i;
+    const first=(e.conversation.find(m=>m.role==="user")||{}).content||"";
+    o.textContent=`${e.topic.replace("_"," ")} · ${e.label?"expert: "+e.label+" · ":""}${first.slice(0,64)}`;$("preset").appendChild(o);});
+  renderTopics();setConversation([{role:"user",content:""},{role:"assistant",content:""}]);verdict("plain");verdict("ours");
+  renderRulebook();renderResults();
+}
+$("preset").onchange=()=>{current=state.examples[$("preset").value]||null;$("violations").innerHTML="";verdict("plain");verdict("ours");
+  if(!current){expertRow();return;}topic=current.topic;renderTopics();setConversation(current.conversation);
+  $("context").value=JSON.stringify(current.context,null,1);expertRow();};
+$("addUser").onclick=()=>turnRow("user","");$("addAsst").onclick=()=>turnRow("assistant","");
+$("run").onclick=async()=>{
+  $("error").textContent="";$("violations").innerHTML="";verdict("plain");verdict("ours");
+  let context;try{context=JSON.parse($("context").value||"{}")}catch(e){$("error").textContent="Client data is not valid JSON.";return;}
+  const conversation=[...document.querySelectorAll(".turn")].map(t=>({role:t.dataset.role,content:t.querySelector("textarea").value.trim()})).filter(m=>m.content);
+  if(!conversation.length){$("error").textContent="Add at least one message.";return;}
+  $("run").disabled=true;$("runText").textContent="Gemma is judging…";
+  try{const r=await fetch("/api/judge",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({topic,context,conversation})});
+    const d=await r.json();if(!r.ok)throw new Error(d.error||"Request failed");
+    verdict("plain",d.plain);verdict("ours",d.judge);expertRow(d.judge);
+    $("violations").innerHTML=d.violated.length?`<div class="vtitle2">Violated rule${d.violated.length>1?"s":""}</div>`+d.violated.map(v=>
+      `<div class="viol"><div class="vhead"><span class="rid">${esc(v.id)}</span>${esc(v.rule)}</div>${v.evidence?`<div class="evl">Evidence from the assistant's reply</div><div class="quote">“${esc(v.evidence)}”</div>`:""}</div>`).join(""):"";
+  }catch(e){$("error").textContent=e.message;}finally{$("run").disabled=false;$("runText").textContent="Judge this conversation";}
+};
+function renderRulebook(){
+  const rb=state.rulebook,ts=Object.keys(rb),pr=(rb[ts[0]]||{}).principles||[];
+  let h=`<h2 style="margin-top:0">General principles — every topic</h2><p class="hint">Learned by Gemma 4 from all labeled conversations; topic rules below say which principle they apply.</p>`+
+    pr.map(r=>`<div class="rule"><span class="rid">${esc(r.id)}</span> ${esc(r.rule)}${r.source?`<div class="tag">${esc(r.source)}</div>`:""}</div>`).join("");
+  ts.forEach(t=>{h+=`<h2>${esc(t.replace("_"," "))} <span class="tag">· leave-one-out accuracy on training data ${rb[t].loo!=null?(rb[t].loo*100).toFixed(0)+"%":"—"}</span></h2>`+
+    rb[t].rules.map(r=>`<div class="rule"><span class="rid">${esc(r.id)}</span> ${esc(r.rule)}${r.principle?` <span class="tag">→ applies ${esc(r.principle)}</span>`:""}${r.source?`<div class="tag">${esc(r.source)}</div>`:""}</div>`).join("");});
+  $("rulebook").innerHTML=h;
+}
+function renderResults(){
+  const s=state.scores||{};
+  if(!s.rows){$("results").innerHTML="<p class='hint'>No results file loaded.</p>";$("foot").parentElement.classList.add("hidden");return;}
+  const [b,o]=s.rows;
+  $("foot").innerHTML=`<span style="color:var(--accent)">▮▮▮</span> Public test: Plain Gemma <span class="n">${b.macro.toFixed(3)}</span> → Rulebook Judge <span class="n hi">${o.macro.toFixed(3)}</span>`;
+  $("foot").onclick=()=>document.querySelector('nav button[data-tab="results"]').click();
+  $("results").innerHTML=`<h2 style="margin-top:0">Same model, same test set, same metric script</h2><p class="hint">${esc(s.note||"")}</p>
+   <table><tr><th>Topic</th><th>${esc(b.name)}</th><th>${esc(o.name)}</th></tr>`+
+   ["macro accuracy (all topics)",...s.topics].map((t,i)=>{const x=i?b.by_topic[i-1]:b.macro,y=i?o.by_topic[i-1]:o.macro;
+     return `<tr><td>${i?esc(t.replace("_"," ")):"<b>"+t+"</b>"}</td><td class="num">${x.toFixed(3)}<div class="bar base" style="width:${x*100}%"></div></td><td class="num"><b>${y.toFixed(3)}</b><div class="bar" style="width:${y*100}%"></div></td></tr>`}).join("")+`</table>`;
+}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
+  ["try","rules","results"].forEach(t=>$("tab-"+t).classList.toggle("hidden",t!==b.dataset.tab));});
+load();
+</script>
+</body>
+</html>

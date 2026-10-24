@@ -1,0 +1,53 @@
+{
+ "note": "Public test set, 80 conversations, organizers' metric script. Same Gemma 4 26B model in both rows.",
+ "topics": [
+  "credit",
+  "financial_position",
+  "savings",
+  "spending"
+ ],
+ "rows": [
+  {
+   "name": "Plain Gemma 4 (generic prompt)",
+   "macro": 0.787,
+   "by_topic": [
+    0.867,
+    0.773,
+    0.9,
+    0.609
+   ]
+  },
+  {
+   "name": "Rulebook Judge (this project)",
+   "macro": 0.911,
+   "by_topic": [
+    1.0,
+    0.818,
+    1.0,
+    0.826
+   ]
+  }
+ ],
+ "ladder": [
+  {
+   "step": "Plain Gemma 4",
+   "macro": 0.787
+  },
+  {
+   "step": "Learned rulebook",
+   "macro": 0.824
+  },
+  {
+   "step": "Judge reasons first",
+   "macro": 0.86
+  },
+  {
+   "step": "Substance, not wording",
+   "macro": 0.88
+  },
+  {
+   "step": "Nearest examples",
+   "macro": 0.911
+  }
+ ]
+}

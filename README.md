@@ -69,6 +69,16 @@ python -m solution eval  --test out/in/test.jsonl  --artifacts out/artifacts --o
 python3 src/evaluate.py --test data/public_test.csv --predictions out/predictions.csv --out out/score.json
 ```
 
+Demo UI — a test-range dashboard (precomputed comparison on a labeled test set) and a workbench to judge any
+conversation live, plain Gemma 4 next to the Rulebook Judge:
+
+```sh
+python -m solution demo --artifacts out/artifacts --examples examples/demo_test_conversations.jsonl \
+  --scores examples/demo_scores.json --gold data/public_test.csv \
+  --plain-preds out/baseline/predictions.csv --ours-preds out/predictions_explained.jsonl --port 8765
+# open http://localhost:8765/dashboard
+```
+
 Judge one conversation live (shows the label and the violated rules):
 
 ```sh

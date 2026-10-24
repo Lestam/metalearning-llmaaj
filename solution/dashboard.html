@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rulebook Judge · Test range</title>
+<style>
+:root{--bg:#f4f6fb;--card:#ffffff;--ink:#141c2b;--mut:#677184;--line:#e6eaf2;--blue:#1d63ff;--blue-soft:#e8efff;
+  --grey:#c7ccd6;--good:#1f9d5a;--good-soft:#e3f6ea;--bad:#e5483d;--bad-soft:#fde8e6;--yellow:#ffd36b;--mint:#bff0d4;--lilac:#e6dcff;
+  --shadow:0 1px 2px rgba(20,28,43,.04),0 10px 30px rgba(20,28,43,.06)}
+@media (prefers-color-scheme:dark){:root{--bg:#0e121a;--card:#161c27;--ink:#edf1f7;--mut:#9aa4b5;--line:#252d3b;--blue:#5b8cff;--blue-soft:#1a2640;
+  --grey:#465064;--good:#4fd18a;--good-soft:#14301f;--bad:#ff7a6f;--bad-soft:#3a1c1b;--shadow:none}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,-apple-system,system-ui,"Segoe UI",sans-serif;overflow-x:hidden}
+.blob{position:fixed;border-radius:50%;filter:blur(50px);z-index:0;pointer-events:none}
+.b1{width:420px;height:300px;background:var(--blue-soft);top:-120px;right:220px;opacity:.9}
+.b2{width:220px;height:220px;background:var(--mint);top:-60px;right:-40px;opacity:.7}
+.b3{width:90px;height:90px;background:var(--yellow);top:30px;right:420px;opacity:.8;filter:blur(6px)}
+header,main{position:relative;z-index:1}
+header{max-width:1440px;margin:0 auto;padding:22px 32px 8px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.logo{width:42px;height:42px;color:var(--blue)}
+h1{margin:0;font-size:26px;letter-spacing:-.02em}
+.sub{color:var(--mut);font-size:14px}
+.switch{margin-left:auto;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px;display:flex;box-shadow:var(--shadow)}
+.switch a{padding:8px 20px;border-radius:999px;color:var(--ink);text-decoration:none;font-weight:600;font-size:14px}
+.switch a.on{background:var(--blue);color:#fff}
+main{max-width:1440px;margin:0 auto;padding:12px 32px 32px;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.card h2{margin:0;font-size:17px;font-weight:700;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.card h2 small{font-weight:400;color:var(--mut);font-size:13px}
+.hint{color:var(--mut);font-size:13px}
+.s3{grid-column:span 3}.s4{grid-column:span 4}.s5{grid-column:span 5}.s7{grid-column:span 7}.s12{grid-column:span 12}
+@media(max-width:1100px){.s3,.s4,.s5,.s7{grid-column:span 12}}
+/* hero */
+.hero .deco1{position:absolute;width:160px;height:120px;border-radius:50%;background:var(--mint);left:-50px;bottom:-40px;opacity:.8}
+.hero .deco2{position:absolute;width:150px;height:90px;border-radius:50%;background:var(--lilac);right:-30px;bottom:-30px;opacity:.9}
+.hero .deco3{position:absolute;width:120px;height:80px;border-radius:50%;background:var(--blue-soft);left:120px;bottom:-50px}
+.score{display:flex;align-items:flex-start;gap:16px;margin:22px 0 14px;position:relative;z-index:1}
+.num{font-size:64px;font-weight:800;letter-spacing:-.04em;line-height:1}
+.num.after{color:var(--blue)}
+.numlab{font-size:14px;color:var(--mut);margin-top:6px}
+.numlab.after{color:var(--blue);font-weight:600}
+.arrow{font-size:34px;color:var(--mut);margin-top:12px}
+.gain{position:relative;z-index:1;display:inline-flex;align-items:center;gap:8px;background:var(--good-soft);color:var(--good);border-radius:14px;padding:8px 16px;font-size:22px;font-weight:800}
+.gainnote{position:relative;z-index:1;color:var(--mut);font-size:13px;margin-top:6px}
+.doodle{position:absolute;right:46px;top:150px;z-index:1}
+/* legend */
+.legend{display:flex;gap:16px;font-size:13px;color:var(--mut);font-weight:400;margin-left:auto}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
+svg text{font-family:inherit}
+/* confusion */
+.alert{background:var(--bad-soft);color:var(--bad);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:600}
+.cm{display:grid;grid-template-columns:1fr 1px 1fr;gap:18px;margin-top:14px}
+.cm .sep{background:var(--line)}
+.cm .cap{font-weight:700;margin-bottom:6px}
+.cm table{border-collapse:separate;border-spacing:4px;width:100%}
+.cm td{border-radius:10px;text-align:center;padding:12px 4px;font-weight:800;font-size:22px}
+.cm th{font-size:12px;color:var(--mut);font-weight:500;text-align:left;white-space:nowrap}
+.cm thead th{text-align:center}
+.ok{background:var(--good-soft);color:var(--good)}
+.miss{background:var(--bad-soft);color:var(--bad)}
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.chip{border-radius:999px;padding:8px 14px;font-size:13px;font-weight:600;display:flex;gap:8px;align-items:center}
+.c0{background:var(--blue-soft);color:var(--blue)}.c1{background:var(--bad-soft);color:var(--bad)}.c2{background:var(--good-soft);color:var(--good)}
+.c3{background:var(--lilac);color:#6a3fd8}.c4{background:#fff1d6;color:#b26a00}.c5{background:#dff5f7;color:#0f7f8c}.c6{background:#f0e6ff;color:#7b3fe4}
+/* fails */
+.fails{list-style:none;padding:0;margin:14px 0 0;counter-reset:f}
+.fails li{display:flex;gap:12px;margin:12px 0;font-size:14px;counter-increment:f}
+.fails li::before{content:counter(f);flex:0 0 30px;height:30px;border-radius:50%;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center;font-weight:700}
+/* tiles */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}
+@media(max-width:900px){.tiles{grid-template-columns:1fr 1fr}}
+.tgroup{border-radius:16px;padding:12px}
+.tgroup h3{margin:0 0 10px;font-size:13px;font-weight:500;color:var(--mut);display:flex;align-items:center;gap:10px}
+.tgroup h3 span{color:#fff;border-radius:999px;padding:3px 12px;font-weight:600;text-transform:capitalize}
+.tgroup.credit{background:var(--blue-soft)}.tgroup.credit h3 span{background:var(--blue)}
+.tgroup.savings{background:var(--good-soft)}.tgroup.savings h3 span{background:var(--good)}
+.tgroup.spending{background:#fff1d6}.tgroup.spending h3 span{background:#f29a1f}
+.tgroup.financial_position{background:var(--lilac)}.tgroup.financial_position h3 span{background:#7b4fe0}
+@media (prefers-color-scheme:dark){.tgroup.spending{background:#33280f}.tgroup.financial_position{background:#271d40}}
+.tgrid{display:flex;flex-wrap:wrap;gap:8px}
+.tile{width:34px;height:24px;border-radius:7px;overflow:hidden;display:flex;gap:2px;cursor:pointer;transition:transform .12s;background:var(--card)}
+.tile:hover{transform:scale(1.3);box-shadow:0 0 0 2px var(--blue)}
+.tile span{flex:1}
+.g{background:#7fd3a3}.r{background:#f2847b}
+@media (prefers-color-scheme:dark){.g{background:#2f9a5e}.r{background:#c4483f}}
+.tip{position:fixed;z-index:5;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:13px;max-width:340px;pointer-events:none;display:none;box-shadow:0 12px 40px rgba(20,28,43,.18)}
+.tip .q{font-weight:700;margin-bottom:8px}
+.tip .v{display:flex;justify-content:space-between;gap:12px;margin:4px 0}
+.badge{border-radius:999px;padding:1px 10px;font-weight:700;font-size:12px}
+.badge.good{background:var(--good-soft);color:var(--good)}.badge.bad{background:var(--bad-soft);color:var(--bad)}
+.err{color:var(--bad)}
+</style>
+</head>
+<body>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<header>
+  <svg class="logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M3 5.5c3-1.5 6-1.5 9 .5v14c-3-2-6-2-9-.5z"/><path d="M21 5.5c-3-1.5-6-1.5-9 .5v14c3-2 6-2 9-.5z"/></svg>
+  <div><h1>Rulebook Judge · Test range</h1>
+    <div class="sub">Gemma 4 26B · same model, with and without the learned rulebook · <span id="n">80</span> expert-labeled test conversations</div></div>
+  <div class="switch"><a class="on" href="/dashboard">Dashboard</a><a href="/">Workbench</a></div>
+</header>
+<main id="main">
+  <section class="card hero s4"><div class="deco1"></div><div class="deco2"></div><div class="deco3"></div>
+    <h2>Macro accuracy <small>(expert-labeled test set)</small></h2>
+    <div class="score">
+      <div><div class="num" id="from">—</div><div class="numlab">Plain Gemma 4</div></div>
+      <div class="arrow">→</div>
+      <div><div class="num after" id="to">—</div><div class="numlab after">Rulebook Judge</div></div>
+    </div>
+    <div class="gain"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg><span id="gain"></span></div>
+    <div class="gainnote">higher macro accuracy · same model, same test set, organizers' metric script</div>
+  </section>
+  <section class="card s5"><h2>Accuracy by topic <span class="legend"><span><i style="background:var(--grey)"></i>Plain Gemma 4</span><span><i style="background:var(--blue)"></i>Rulebook Judge</span></span></h2>
+    <svg id="bars" width="100%" height="250"></svg></section>
+  <section class="card s3"><h2>What moved the score</h2><svg id="ladder" width="100%" height="250"></svg></section>
+  <section class="card s5"><h2>Confusion matrices <span class="alert" id="alert">Plain model is too lenient on bad replies</span></h2>
+    <div class="cm" id="cm"></div></section>
+  <section class="card s4"><h2>Learned rulebook at a glance</h2><div class="hint">general principles · test conversations each one caught</div><div class="chips" id="chips"></div></section>
+  <section class="card s3"><h2>⚠️ Where it still fails</h2><ol class="fails">
+    <li>Arithmetic-heavy spending totals: the judge sometimes recomputes a correct answer wrongly.</li>
+    <li>Most remaining errors are good replies rejected, not bad replies accepted.</li>
+    <li>Defects absent from the training labels can be missed.</li></ol></section>
+  <section class="card s12"><h2>Test conversations <small id="total"></small>
+    <span class="legend"><span><i style="background:var(--grey)"></i>Plain Gemma 4 (left)</span><span><i style="background:var(--blue)"></i>Rulebook Judge (right)</span><span><i style="background:#7fd3a3"></i>agrees with expert</span><span><i style="background:#f2847b"></i>disagrees</span></span></h2>
+    <div class="tiles" id="tiles"></div></section>
+</main>
+<div class="tip" id="tip"></div>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const TOP=["credit","savings","spending","financial_position"];
+function bars(s){
+  const svg=$("bars"),W=svg.clientWidth||520,H=250,L=34,B=40,gw=(W-L)/TOP.length,bw=Math.min(40,gw/3);
+  const y=v=>H-B-v*(H-B-28);
+  let h="";[0,.2,.4,.6,.8,1].forEach(v=>{h+=`<text x="0" y="${y(v)+4}" font-size="11" fill="${css('--mut')}">${v.toFixed(1)}</text><line x1="${L}" y1="${y(v)}" x2="${W}" y2="${y(v)}" stroke="${css('--line')}"/>`;});
+  TOP.forEach((t,i)=>{const k=s.topics.indexOf(t),a=s.rows[0].by_topic[k],b=s.rows[1].by_topic[k],x=L+i*gw+gw/2;
+    h+=`<rect x="${x-bw-3}" y="${y(a)}" width="${bw}" height="${y(0)-y(a)}" rx="5" fill="${css('--grey')}"/>`+
+       `<rect x="${x+3}" y="${y(b)}" width="${bw}" height="${y(0)-y(b)}" rx="5" fill="${css('--blue')}"/>`+
+       `<text x="${x-bw/2-3}" y="${y(a)-6}" font-size="12" text-anchor="middle" fill="${css('--ink')}">${a.toFixed(3)}</text>`+
+       `<text x="${x+bw/2+3}" y="${y(b)-6}" font-size="12" font-weight="700" text-anchor="middle" fill="${css('--blue')}">${b.toFixed(3)}</text>`+
+       `<text x="${x}" y="${H-18}" font-size="12" text-anchor="middle" fill="${css('--ink')}">${t==="financial_position"?"financial":t}</text>`+
+       (t==="financial_position"?`<text x="${x}" y="${H-4}" font-size="12" text-anchor="middle" fill="${css('--ink')}">position</text>`:"");});
+  svg.innerHTML=h;
+}
+function ladder(steps){
+  const svg=$("ladder"),W=svg.clientWidth||330,H=250,n=steps.length,lo=Math.min(...steps.map(s=>s.macro))-0.02,hi=Math.max(...steps.map(s=>s.macro))+0.02;
+  const px=i=>22+i*(W-44)/(n-1),py=v=>H-66-(v-lo)/(hi-lo)*(H-110);
+  let h="",d=`M ${px(0)} ${py(steps[0].macro)}`;
+  steps.forEach((s,i)=>{if(!i)return;const x0=px(i-1),x1=px(i),y0=py(steps[i-1].macro),y1=py(s.macro);
+    h+=`<rect x="${x0}" y="${y1}" width="${x1-x0}" height="${y0-y1}" fill="${i===n-1?css('--blue-soft'):css('--good-soft')}"/>`;
+    h+=`<text x="${(x0+x1)/2}" y="${y1-8}" font-size="12" font-weight="700" text-anchor="middle" fill="${i===n-1?css('--blue'):css('--good')}">+${(s.macro-steps[i-1].macro).toFixed(3)}</text>`;
+    d+=` H ${x1} V ${y1}`;});
+  h+=`<path d="${d}" fill="none" stroke="${css('--good')}" stroke-width="2.5" stroke-linejoin="round"/>`;
+  steps.forEach((s,i)=>{const c=i===0?css('--mut'):i===n-1?css('--blue'):css('--good');
+    h+=`<circle cx="${px(i)}" cy="${py(s.macro)}" r="6" fill="${c}" stroke="${css('--card')}" stroke-width="2"/>`+
+       `<text x="${px(i)}" y="${H-46}" font-size="13" font-weight="700" text-anchor="middle" fill="${i===n-1?css('--blue'):css('--ink')}">${s.macro.toFixed(3)}</text>`+
+       `<foreignObject x="${px(i)-34}" y="${H-38}" width="68" height="38"><div xmlns="http://www.w3.org/1999/xhtml" style="font-size:10.5px;line-height:1.15;text-align:center;color:${css('--mut')}">${esc(s.step)}</div></foreignObject>`;});
+  svg.innerHTML=h;
+}
+function cm(c){
+  const one=(name,m)=>`<div><div class="cap">${name}</div><table><thead><tr><th></th><th>Predicted good</th><th>Predicted bad</th></tr></thead>
+    <tr><th>Expert good</th><td class="ok">${m.good.good}</td><td class="miss">${m.good.bad}</td></tr>
+    <tr><th>Expert bad</th><td class="miss">${m.bad.good}</td><td class="ok">${m.bad.bad}</td></tr></table></div>`;
+  $("cm").innerHTML=one("Plain Gemma 4",c.plain)+`<div class="sep"></div>`+one("Rulebook Judge",c.ours);
+  $("alert").textContent=`Plain Gemma lets ${c.plain.bad.good} of ${c.plain.bad.good+c.plain.bad.bad} bad replies through · Rulebook Judge: ${c.ours.bad.good}`;
+}
+function shortRule(r){let s=r.split(/[:;(—]| - /)[0].trim();return s.length>38?s.slice(0,36).trim()+"…":s;}
+const ICONS=["✓","€","⌕","☰","%","⛨","✎"];
+function tiles(items){
+  $("total").textContent=`(${items.length} total)`;
+  $("tiles").innerHTML=TOP.map(t=>{const its=items.filter(x=>x.topic===t);
+    return `<div class="tgroup ${t}"><h3><span>${t.replace("_"," ")}</span>${its.length} conversations</h3><div class="tgrid">`+its.map(x=>
+      `<div class="tile" data-i="${items.indexOf(x)}"><span class="${x.plain===x.gold?"g":"r"}"></span><span class="${x.ours===x.gold?"g":"r"}"></span></div>`).join("")+`</div></div>`;}).join("");
+  const tip=$("tip"),b=l=>`<span class="badge ${l}">${(l||"").toUpperCase()}</span>`;
+  document.querySelectorAll(".tile").forEach(el=>{
+    el.onmousemove=e=>{const x=items[el.dataset.i];tip.style.display="block";
+      tip.style.left=Math.min(e.clientX+16,innerWidth-360)+"px";tip.style.top=Math.min(e.clientY+16,innerHeight-190)+"px";
+      tip.innerHTML=`<div class="q">💬 Client: ${esc(x.question)}</div><div class="v">Expert ${b(x.gold)}</div><div class="v">Plain Gemma 4 ${b(x.plain)}</div><div class="v">Rulebook Judge ${b(x.ours)}</div>${x.rules.length?`<div class="hint" style="margin-top:6px">violated: ${esc(x.rules.join(", "))}</div>`:""}`;};
+    el.onmouseleave=()=>tip.style.display="none";});
+}
+async function load(){
+  const d=await (await fetch("/api/dashboard")).json();
+  if(d.error){$("main").innerHTML=`<p class="err">${esc(d.error)}</p>`;return;}
+  const s=d.scores,[b,o]=s.rows;$("n").textContent=d.items.length;
+  $("from").textContent=b.macro.toFixed(3);$("to").textContent=o.macro.toFixed(3);$("gain").textContent=`+${((o.macro-b.macro)*100).toFixed(1)} pts`;
+  const steps=(s.ladder||[]).filter(x=>!x.skip);
+  bars(s);ladder(steps);cm(d.confusion);tiles(d.items);
+  $("chips").innerHTML=d.principles.sort((x,y)=>y.caught-x.caught).map((p,i)=>`<span class="chip c${i%7}" title="${esc(p.rule)}">${ICONS[i%7]} ${esc(shortRule(p.rule))} · ${p.caught}</span>`).join("");
+  addEventListener("resize",()=>{bars(s);ladder(steps);});
+}
+load();
+</script>
+</body>
+</html>

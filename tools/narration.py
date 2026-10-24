@@ -23,8 +23,8 @@ LINES = [
               "and then tests every rule on the data, keeping only the ones that hold up. "
               "The judge then applies exactly that rulebook to new conversations."),
     ("hero", "Here is what that changes. With the same model, the same test and the same metric, plain Gemma agrees with "
-             "the expert seventy-nine percent of the time, and with the learned rulebook, ninety-two. In practice, the bad "
-             "replies that slip through drop from sixteen out of thirty to just two."),
+             "the expert seventy-nine percent of the time, and with the learned rulebook, ninety-three. In practice, the bad "
+             "replies that slip through drop from sixteen out of thirty to just one."),
     ("topics", "Every topic improves, and spending improves the most, because its rules are definitions nobody can guess: "
                "refunds come off, and transfers between your own accounts don't count as spending."),
     ("steps", "We measured every step. The rulebook gave the first jump, asking the judge to recompute the numbers gave the "

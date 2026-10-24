@@ -270,6 +270,8 @@ def main():
     ap.add_argument("--no-principles", action="store_true", help="per-topic rules only (no shared principles)")
     ap.add_argument("--refs-k", type=int, default=10, help="reference examples per judge call (0 = all of the topic)")
     ap.add_argument("--judge-thinking", choices=["on", "off"], default="on")
+    ap.add_argument("--only", default="", help="comma-separated topics to re-learn; the others are copied from --base")
+    ap.add_argument("--base", default="", help="artifacts directory whose rulebook supplies the topics not re-learned")
     args = ap.parse_args()
     global REFS_K, JUDGE_THINKING
     REFS_K = args.refs_k
@@ -284,6 +286,20 @@ def main():
         logs.append(msg)
 
     topics = by_topic(rows)
+    if args.only:  # re-learn some topics only: e.g. after the product rules of one topic changed
+        base = json.loads((Path(args.base) / "rulebook.json").read_text())
+        only = [t.strip() for t in args.only.split(",")]
+        artifacts = dict(base["topics"])
+        principles = artifacts[TOPICS[0]].get("principles", [])
+        for t, art in zip(only, llm.pmap(lambda t: adapt_topic(t, topics[t], args.rounds, args.votes, log,
+                                                                  not args.no_priors, principles), only, workers=4)):
+            artifacts[t] = art
+        config = dict(base["config"], relearned=only, stats=llm.STATS)
+        (out / "rulebook.json").write_text(json.dumps({"config": config, "topics": artifacts}, ensure_ascii=False, indent=1))
+        (out / "adapt_log.txt").write_text("\n".join(logs))
+        write_explanation(out, artifacts, config)
+        log(f"re-learned {only}; other topics copied from {args.base}")
+        return
     principles = []
     if not args.no_principles:
         try:

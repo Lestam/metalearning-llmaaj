@@ -5,7 +5,7 @@
  },
  {
   "block": "hero",
-  "text": "Here is what that changes. With the same model, the same test and the same metric, plain Gemma agrees with the expert seventy-nine percent of the time, and with the learned rulebook, ninety-two. In practice, the bad replies that slip through drop from sixteen out of thirty to just two."
+  "text": "Here is what that changes. With the same model, the same test and the same metric, plain Gemma agrees with the expert seventy-nine percent of the time, and with the learned rulebook, ninety-three. In practice, the bad replies that slip through drop from sixteen out of thirty to just one."
  },
  {
   "block": "topics",

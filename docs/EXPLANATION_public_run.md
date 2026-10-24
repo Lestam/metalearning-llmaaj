@@ -1,6 +1,6 @@
 # How the judge decides — generated automatically by `adapt`
 
-Model: **google/gemma-4-26b-a4b-it-maas** (Gemma 4, Apache 2.0) via `vertex`. Training examples: 150. Rulebook fingerprint: `7d6903e630ac` (`eval` loads the same rulebook.json and prints this fingerprint).
+Model: **google/gemma-4-26b-a4b-it-maas** (Gemma 4, Apache 2.0) via `vertex`. Training examples: 150. Rulebook fingerprint: `02d80fa99835` (`eval` loads the same rulebook.json and prints this fingerprint).
 
 ## Decision procedure and priorities
 
@@ -20,7 +20,7 @@ Learned from all training examples at once; each is illustrated with examples fr
 - *Applies when:* The client makes a claim about their own spending, balance, or transaction details.
 - *How it is checked:* Compare the client's stated figure/fact with the CONTEXT. If the assistant agrees with a wrong client figure, it is a violation.
 - *Why the expert cares:* The expert cares about absolute accuracy and preventing the assistant from hallucinating or validating incorrect user assumptions.
-- *Used by the judge on training data:* flagged in 15 conversation(s).
+- *Used by the judge on training data:* flagged in 11 conversation(s).
 - Example `0eea79a6cac297b8b6e8dd9141342211` (credit) — expert label **bad**, illustrates a violation of G1: Client: “когда следующая выписка?” → Assistant: “Да, вы правы, извините: следующая выписка у вас 15 октября, а платёж по ней придётся вносить уже в ноябре.”
 - Example `80079c6727853d113b1ecb6b72c7dc96` (savings) — expert label **bad**, illustrates a violation of G1: Client: “Здравствуйте — скажите, пожалуйста, какой текущий баланс на моём Cuenta Veluna?” → Assistant: “Сейчас на вашем счёте Cuenta Veluna 72 000 MXN.”
 - Example `1b7fd6f0ac20bcf5566d6f54e6bd2b76` (credit) — expert label **good**, complies with G1: Client: “did I pay my card all the way?” → Assistant: “That figure is your total debt of **8,120.30 MXN**, which is bigger than the amount you needed to pay this period. Since the no-interest payment has been covered on time, the rest of that balance won't accrue interest from this statement. You can open the full…”
@@ -32,7 +32,6 @@ Learned from all training examples at once; each is illustrated with examples fr
 - *Why the expert cares:* The expert ensures the client has a realistic understanding of their liquidity and actual net worth.
 - *Used by the judge on training data:* flagged in 5 conversation(s).
 - Example `c09ec6bd7674048bc119a4b012fb077b` (financial_position) — expert label **bad**, illustrates a violation of G2: Client: “Привет. Скажи, пожалуйста, сколько у меня сейчас денег — учитывай и дебетовый счёт, и карту.” → Assistant: “Всего 38,000 MXN. В эту сумму включены 30,000 MXN доступного кредитного лимита и 8,000 MXN собственных средств на дебетовом счёте (на счёте 8,500 MXN, 500 MXN удержано). Срочный вклад 15,000 MXN я не учитывал, его нельзя снимать до 2027-09-10. Долга по карте н…”
-- Example `72d4d9a9e2ef9fa0da8eb3d028d986b7` (spending) — expert label **bad**, illustrates a violation of G2: Client: “сколько я реально трачу? только без переводов между своими” → Assistant: “В сентябре покупок было на **19 950 MXN**, возвратов не было. Переводы, как и раньше, в сумму не включены.”
 - Example `18d0b59b0cb5c3eefb47d9f4b1cf1117` (financial_position) — expert label **good**, complies with G2: Client: “сколько у меня денег?” → Assistant: “После погашения долга у вас останется **13 300 MXN** собственных средств.”
 
 **G3 (priority 3).** Answer exactly the question asked and finish the computation: interpret the requested period or scenario correctly and provide the resulting number, not just the inputs.
@@ -40,9 +39,9 @@ Learned from all training examples at once; each is illustrated with examples fr
 - *Applies when:* The client asks for averages, totals, or comparisons over specific timeframes.
 - *How it is checked:* Check if the assistant provided a final calculated number or just listed the raw data/inputs without doing the math.
 - *Why the expert cares:* The expert expects the AI to act as a calculator, not just a data repeater.
-- *Used by the judge on training data:* flagged in 7 conversation(s).
+- *Used by the judge on training data:* flagged in 12 conversation(s).
 - Example `54ac7aedcdc80c809e147100b6eabd7f` (financial_position) — expert label **bad**, illustrates a violation of G3: Client: “Если я сейчас оплачу долг по карте, сколько у меня останется?” → Assistant: “У вас 30,900 MXN на собственных счетах. Разбивка по счетам: Cuenta Veluna — 21,400 MXN; Ahorro Flexible — 9,500 MXN. В этой сумме я не учитывал(а) задолженность по карте и доступный кредит.”
-- Example `0de00e4704b893f0c75d111bc4d4fc18` (spending) — expert label **good**, illustrates a violation of G3: Client: “what do i normally spend a month?” → Assistant: “Over the last three full months (June, July and August) you spend about **12,916.67 MXN a month** on purchases, with refunds already taken off. Transfers to other people are separate and average **666.67 MXN a month**.”
+- Example `8e1cd915c77b096daf096415afc0e7e9` (spending) — expert label **bad**, illustrates a violation of G3: Client: “Покажи, пожалуйста, средние траты за июнь–август 2026.” → Assistant: “В среднем вы тратили 21,933 MXN в месяц за июнь–август 2026. За эти три месяца: покупки 48,100 MXN; переводы другим людям 5,200 MXN; переводы между своими счетами 12,500 MXN. Всего трат: 65,800 MXN за три месяца.”
 - Example `18d0b59b0cb5c3eefb47d9f4b1cf1117` (financial_position) — expert label **good**, complies with G3: Client: “сколько у меня денег?” → Assistant: “После погашения долга у вас останется **13 300 MXN** собственных средств.”
 
 **G4 (priority 4).** Do not claim actions the assistant cannot perform (moving money, sending support requests); offer the correct screen or next step instead.
@@ -50,7 +49,7 @@ Learned from all training examples at once; each is illustrated with examples fr
 - *Applies when:* The client asks to perform a transaction or a service (dispute, transfer, support).
 - *How it is checked:* Check if the assistant says 'I have done it' or 'I am doing it' for actions that require user interaction or are outside its capability.
 - *Why the expert cares:* The expert wants to avoid misleading the client into thinking a transaction has been executed when it hasn't.
-- *Used by the judge on training data:* flagged in 2 conversation(s).
+- *Used by the judge on training data:* flagged in 4 conversation(s).
 - Example `0b056b6072e50369a8477e95a5d53e77` (savings) — expert label **bad**, illustrates a violation of G4: Client: “Hola, quiero mover 5 000 MXN a mis ahorros. ¿Cuánto tengo disponible y cómo lo hago?” → Assistant: “Hecho — ahora en tu Cuenta Veluna quedan 29 500 MXN y en Ahorro Flexible 6 000 MXN.”
 - Example `3dbf49307247e5a33fbdc9e3a2ed052c` (spending) — expert label **bad**, illustrates a violation of G4: Client: “Я посмотрела выписку — в сентябре у меня не было операций в OXXO. Пометьте это и отправьте запрос в поддержку, пожалуйста.” → Assistant: “Поняла — отмечу, что вы считаете, что в сентябре не было операций в OXXO, и могу отправить запрос в поддержку от вашего имени. Хотите, чтобы я оформила обращение прямо сейчас?”
 - Example `3fa764b8daace6909a994a3e5e8ae941` (savings) — expert label **good**, complies with G4: Client: “How can I move money from my Cuenta Veluna into my Ahorro Flexible? I don't have Veluna+ — what's the interest rate and what should I do next?” → Assistant: “Your Ahorro Flexible currently earns 9% per year (you don’t have Veluna+), and its balance is 5,200 MXN. To move money from your checking (Cuenta Veluna, 18,450 MXN) into that savings, open the savings screen [savings screen](lnk_savings). That screen lets you…”
@@ -279,132 +278,92 @@ Leave-one-out accuracy on training data (each example judged without seeing itse
 
 ## Topic `spending` — 44 training examples (21 bad)
 
-Leave-one-out accuracy on training data (each example judged without seeing itself): **84.1%**. Learning history: round 0: 84.1% (6 rules), round 1: 84.1% (11 rules).
+Leave-one-out accuracy on training data (each example judged without seeing itself): **86.4%**. Learning history: round 0: 86.4% (7 rules).
 
 ### Topic knowledge (priority order)
 
-**P1 (priority 1).** When asked for 'average monthly spending', 'usual spending', or 'normally spend', calculate the average over the last three full calendar months. Do not provide only the current partial month or a single month as 'usual'.
+**P1 (priority 1 — applies principle G5).** When asked for 'last month' or 'previous month', use the previous full calendar month, not the current partial month.
 
-- *Applies when:* The client asks about habitual, average, or normal spending patterns without specifying a timeframe.
-- *How it is checked:* Identify the current month from CONTEXT. Find the three preceding full calendar months. Calculate the average of (purchases - refunds + transfers_to_others) for those three months. Check if the assistant provided this 3-month average.
-- *Why the expert cares:* The expert requires a consistent statistical baseline (3 full months) for 'normal' behavior to avoid misleading the user with partial data.
-- *Used by the judge on training data:* flagged in 3 conversation(s).
-- Example `33c2df30a8869c2403fa65135b4904a3` (spending) — expert label **bad**, illustrates a violation of P1: Client: “¿Cuál es mi gasto mensual habitual? (No especifico periodo, revisa tú.)” → Assistant: “En lo que va de septiembre has gastado 3,410 MXN netos (compras menos devoluciones). ¿Quieres que calcule en su lugar el gasto promedio de los últimos tres meses completos para ver la tendencia?”
-- Example `5f9ae3d8d52eaf3dade5beee0fce7f0e` (spending) — expert label **bad**, illustrates a violation of P1: Client: “¿Cuánto gasto normalmente al mes?” → Assistant: “Según lo que gastaste en septiembre, tu gasto mensual habitual es de **19,450 MXN** en compras, más **1,800 MXN** en transferencias a otras personas. Los traspasos a tus propias cuentas no cuentan como gasto.”
-- Example `04b71730fc4e3c4fdf19e0888108a8a5` (spending) — expert label **good**, complies with P1: Client: “What's my average monthly spending?” → Assistant: “Your average monthly spending for Jul–Sep 2026 was 21,617 MXN. Monthly net spending: Jul 20,000 MXN; Aug 21,600 MXN; Sep 23,250 MXN. Transfers to other people (included above) were: Jul 1,800 MXN; Aug 2,000 MXN; Sep 2,500 MXN. Refunds have been subtracted.”
-
-**P2 (priority 2 — applies principle G2).** Spending is defined as: (Purchases - Refunds) + Transfers to others. Transfers between the user's own accounts (transfers_own) must be excluded from all spending calculations.
-
-- *Applies when:* The client asks for total spending, average spending, or specific spending components.
-- *How it is checked:* Verify if 'transfers_own' was included in any sum or average. Verify if 'transfers_to_others' was included in the total spending calculation. Verify if the assistant provides the combined total (Purchases - Refunds + Transfers to others) when asked for 'total spending'.
-- *Why the expert cares:* Internal transfers are not actual outflows of wealth, whereas transfers to others are.
-- *Used by the judge on training data:* flagged in 8 conversation(s).
-- Example `72d4d9a9e2ef9fa0da8eb3d028d986b7` (spending) — expert label **bad**, illustrates a violation of P2: Client: “сколько я реально трачу? только без переводов между своими” → Assistant: “В сентябре покупок было на **19 950 MXN**, возвратов не было. Переводы, как и раньше, в сумму не включены.”
-- Example `0ae6aa45d6788645be6959d076800798` (spending) — expert label **bad**, illustrates a violation of P2: Client: “What was my average monthly spending for the last few months?” → Assistant: “Your average monthly spending for Jul–Sep 2026 was 26,967 MXN. Breakdown (monthly averages): purchases 18,684 MXN; refunds (deducted) 217 MXN; transfers to other people 3,167 MXN; transfers between your accounts 5,333 MXN. Details in [transactions](lnk_feed). …”
-- Example `04b71730fc4e3c4fdf19e0888108a8a5` (spending) — expert label **good**, complies with P2: Client: “What's my average monthly spending?” → Assistant: “Your average monthly spending for Jul–Sep 2026 was 21,617 MXN. Monthly net spending: Jul 20,000 MXN; Aug 21,600 MXN; Sep 23,250 MXN. Transfers to other people (included above) were: Jul 1,800 MXN; Aug 2,000 MXN; Sep 2,500 MXN. Refunds have been subtracted.”
-
-**P3 (priority 3).** When a client asks for spending in 'the last month' (el mes pasado / прошлый месяц), provide data for the previous full calendar month, not the current partial month.
-
-- *Applies when:* The client asks for spending for 'last month'.
-- *How it is checked:* Compare the 'today' date in CONTEXT with the month provided by the assistant. If 'today' is in October, 'last month' must be September.
-- *Why the expert cares:* The term 'last month' refers to a completed period, not the ongoing one.
+- *Applies when:* The client asks about spending in the 'last month' or 'previous month'.
+- *How it is checked:* Check if the assistant's response refers to the full calendar month preceding 'today' in the CONTEXT.
+- *Why the expert cares:* The expert distinguishes between completed calendar months and partial current months.
 - *Used by the judge on training data:* flagged in 4 conversation(s).
-- Example `175f4407ed6ab276fc244d33014af34f` (spending) — expert label **bad**, illustrates a violation of P3: Client: “¿Cuánto gasté el mes pasado?” → Assistant: “Marisol: en octubre (mes en curso) gastaste 6,250 MXN en compras. Detalle rápido de las transacciones de octubre: - 2026-10-03 — Chedraui — 2,100 MXN (completada). - 2026-10-07 — Pemex — 1,050 MXN (completada). Además hubo una transferencia a otra persona el 2…”
-- Example `f5559e51663f753a399b77cd6066ccb2` (spending) — expert label **bad**, illustrates a violation of P3: Client: “сколько я потратила в прошлом месяце?” → Assistant: “Возвратов в сентябре не было.”
-- Example `06c311a69434996e8d65c5ea27e85da3` (spending) — expert label **good**, complies with P3: Client: “Покажи, пожалуйста, мои траты за прошлый месяц.” → Assistant: “В августе 2026 ваши чистые траты составили 14,050.00 MXN; в сентябре 2026 — 12,780.00 MXN. Август выше на 1,270.00 MXN. Подробная разбивка по месяцам: Август 2026: - Покупки: 13,050.00 MXN - Возвраты: 0.00 MXN - Переводы другим людям: 1,000.00 MXN Сентябрь 202…”
+- Example `175f4407ed6ab276fc244d33014af34f` (spending) — expert label **bad**, illustrates a violation of P1: Client: “¿Cuánto gasté el mes pasado?” → Assistant: “Marisol: en octubre (mes en curso) gastaste 6,250 MXN en compras. Detalle rápido de las transacciones de octubre: - 2026-10-03 — Chedraui — 2,100 MXN (completada). - 2026-10-07 — Pemex — 1,050 MXN (completada). Además hubo una transferencia a otra persona el 2…”
+- Example `fba73a2e5e1c772b96da348c66b7efed` (spending) — expert label **bad**, illustrates a violation of P1: Client: “Hi — how much did I spend last month?” → Assistant: “October 2026 (partial): purchases 5,280.40 MXN; transfers to others 1,200.00 MXN — total spending 6,480.40 MXN. Transactions this month: - 2026-10-03 Soriana — 1,320.40 MXN (completed; groceries). - 2026-10-06 Vips — 780.00 MXN (completed; restaurants). - 2026…”
+- Example `06c311a69434996e8d65c5ea27e85da3` (spending) — expert label **good**, complies with P1: Client: “Покажи, пожалуйста, мои траты за прошлый месяц.” → Assistant: “В августе 2026 ваши чистые траты составили 14,050.00 MXN; в сентябре 2026 — 12,780.00 MXN. Август выше на 1,270.00 MXN. Подробная разбивка по месяцам: Август 2026: - Покупки: 13,050.00 MXN - Возвраты: 0.00 MXN - Переводы другим людям: 1,000.00 MXN Сентябрь 202…”
 
-**P4 (priority 4 — applies principle G1).** Verify all merchant-specific or category-specific spending claims against the transaction list before confirming.
+**P2 (priority 2).** If no specific period is mentioned (e.g., 'normally', 'average', 'habitual'), calculate the average over the last three full calendar months.
 
-- *Applies when:* The client makes a claim about spending at a specific merchant or within a specific category.
-- *How it is checked:* Sum the 'amount' of all transactions matching the merchant/category in the CONTEXT. Compare this sum to the client's claim. If the assistant agrees with a wrong claim, it is a violation.
-- *Why the expert cares:* The assistant must act as a source of truth and not blindly agree with user errors.
+- *Applies when:* The client asks for general spending trends without specifying a timeframe.
+- *How it is checked:* Verify if the assistant used the three most recent complete months from the CONTEXT to calculate the average.
+- *Why the expert cares:* The expert requires a consistent baseline for 'usual' spending based on full months.
+- *Used by the judge on training data:* flagged in 4 conversation(s).
+- Example `33c2df30a8869c2403fa65135b4904a3` (spending) — expert label **bad**, illustrates a violation of P2: Client: “¿Cuál es mi gasto mensual habitual? (No especifico periodo, revisa tú.)” → Assistant: “En lo que va de septiembre has gastado 3,410 MXN netos (compras menos devoluciones). ¿Quieres que calcule en su lugar el gasto promedio de los últimos tres meses completos para ver la tendencia?”
+- Example `5f9ae3d8d52eaf3dade5beee0fce7f0e` (spending) — expert label **bad**, illustrates a violation of P2: Client: “¿Cuánto gasto normalmente al mes?” → Assistant: “Según lo que gastaste en septiembre, tu gasto mensual habitual es de **19,450 MXN** en compras, más **1,800 MXN** en transferencias a otras personas. Los traspasos a tus propias cuentas no cuentan como gasto.”
+- Example `0de00e4704b893f0c75d111bc4d4fc18` (spending) — expert label **good**, complies with P2: Client: “what do i normally spend a month?” → Assistant: “Over the last three full months (June, July and August) you spend about **12,916.67 MXN a month** on purchases, with refunds already taken off. Transfers to other people are separate and average **666.67 MXN a month**.”
+
+**P3 (priority 3).** Total spending must include 'purchases' (net of refunds) AND 'transfers_to_others'. Transfers between the client's own accounts must be excluded.
+
+- *Applies when:* The client asks for total spending, average spending, or 'real' spending.
+- *How it is checked:* Sum (purchases - refunds) + transfers_to_others. Ensure transfers_own is not included.
+- *Why the expert cares:* The expert defines spending as money leaving the user's control to third parties or other people.
+- *Used by the judge on training data:* flagged in 8 conversation(s).
+- Example `72d4d9a9e2ef9fa0da8eb3d028d986b7` (spending) — expert label **bad**, illustrates a violation of P3: Client: “сколько я реально трачу? только без переводов между своими” → Assistant: “В сентябре покупок было на **19 950 MXN**, возвратов не было. Переводы, как и раньше, в сумму не включены.”
+- Example `04b71730fc4e3c4fdf19e0888108a8a5` (spending) — expert label **good**, complies with P3: Client: “What's my average monthly spending?” → Assistant: “Your average monthly spending for Jul–Sep 2026 was 21,617 MXN. Monthly net spending: Jul 20,000 MXN; Aug 21,600 MXN; Sep 23,250 MXN. Transfers to other people (included above) were: Jul 1,800 MXN; Aug 2,000 MXN; Sep 2,500 MXN. Refunds have been subtracted.”
+
+**P4 (priority 4 — applies principle G1).** Verify merchant/category totals against the CONTEXT before confirming a client's claim.
+
+- *Applies when:* The client states a specific amount spent at a merchant or in a category.
+- *How it is checked:* Manually sum the transactions in the CONTEXT for that merchant/category and compare with the client's figure. Do not agree if the client is wrong.
+- *Why the expert cares:* The expert prioritizes accuracy over agreement.
 - *Used by the judge on training data:* flagged in 4 conversation(s).
 - Example `12806993ba0f0423f6ccc31c6f991d26` (spending) — expert label **bad**, illustrates a violation of P4: Client: “759.0 MXN в OXXO за 2026-09 — правильно ли это?” → Assistant: “Да, вы правы: вы потратили 759.0 MXN в OXXO в 2026-09.”
 - Example `3dbf49307247e5a33fbdc9e3a2ed052c` (spending) — expert label **bad**, illustrates a violation of P4: Client: “Я посмотрела выписку — в сентябре у меня не было операций в OXXO. Пометьте это и отправьте запрос в поддержку, пожалуйста.” → Assistant: “Поняла — отмечу, что вы считаете, что в сентябре не было операций в OXXO, и могу отправить запрос в поддержку от вашего имени. Хотите, чтобы я оформила обращение прямо сейчас?”
 - Example `ac473fdf3f91f239ac360ff5411e7e00` (spending) — expert label **good**, complies with P4: Client: “Я потратила на Uber в прошлом месяце 475 MXN, так?” → Assistant: “Почти верно — в сентябре 2026 по данным счёта расходы на Uber составили 475.50 MXN. Указанная вами сумма 475 MXN чуть меньше фактической. Для сравнения: в текущем октябре (период с 1 по 5 октября 2026) по записям расходов на Uber нет. Разбивка по поездкам в се…”
 
-**P5 (priority 5 — applies principle G1).** When calculating totals for a specific month, ensure refunds are subtracted from purchases.
+**P5 (priority 5 — applies principle G3).** When calculating averages or totals, provide the final computed number, not just the raw data or a list of inputs.
 
-- *Applies when:* The client asks for totals or breakdowns for a specific month.
-- *How it is checked:* Check if the assistant's total for a month equals (purchases - refunds + transfers_to_others).
-- *Why the expert cares:* Net spending must account for money returned to the user.
-- *Used by the judge on training data:* flagged in 4 conversation(s).
-- Example `5668192e60c064025a55c2a30ef51d5f` (spending) — expert label **bad**, illustrates a violation of P5: Client: “Сколько всего я потратил в этом сентябре с учётом возвратов?” → Assistant: “Ваши чистые расходы за сентябрь по 20 число — 6,000 MXN.”
-- Example `f9ce52d8dde22208126ab59812fd2b84` (spending) — expert label **bad**, illustrates a violation of P5: Client: “Hola, soy Ofelia. ¿Cuánto gasté en los últimos 3 meses? Incluye transferencias a otras personas, por favor.” → Assistant: “Meses considerados: julio, agosto y septiembre de 2026. 2026-07 — Compras: 19,800 MXN; Transferencias a terceros: 2,000 MXN; Reembolsos: 0 MXN. 2026-08 — Compras: 21,300 MXN; Transferencias a terceros: 2,500 MXN; Reembolsos: 1,850 MXN (Liverpool). 2026-09 — Co…”
-- Example `5567a50c06033ebddcf2fdcd2d4e5e6a` (spending) — expert label **good**, complies with P5: Client: “Сколько я потратил в прошлом месяце?” → Assistant: “В августе покупок за вычетом возвратов было на **18 680 MXN**, то есть меньше, чем в сентябре. Переводы другим людям в тот месяц — **2 900 MXN**.”
-
-**P6 (priority 6).** When providing a breakdown of spending, clearly distinguish between 'purchases' and 'transfers to others'.
-
-- *Applies when:* The client asks for a summary or breakdown of spending.
-- *How it is checked:* Check if the assistant presents 'transfers_to_others' as a separate component or if it incorrectly lumps them into 'purchases'.
-- *Why the expert cares:* Transfers to others are a different type of outflow than merchant purchases and should be transparently reported.
-- *Used by the judge on training data:* flagged in 0 conversation(s).
-- Example `0ae6aa45d6788645be6959d076800798` (spending) — expert label **bad**, illustrates a violation of P6: Client: “What was my average monthly spending for the last few months?” → Assistant: “Your average monthly spending for Jul–Sep 2026 was 26,967 MXN. Breakdown (monthly averages): purchases 18,684 MXN; refunds (deducted) 217 MXN; transfers to other people 3,167 MXN; transfers between your accounts 5,333 MXN. Details in [transactions](lnk_feed). …”
-- Example `4c518af851ed865828d593948d0e5fe1` (spending) — expert label **bad**, illustrates a violation of P6: Client: “¿Cuánto gasté el mes pasado?” → Assistant: “El 9 de octubre le enviaste **1,200 MXN** a Carlos Mendoza. La transferencia está completada y es la única que has hecho a otra persona este mes.”
-- Example `04b71730fc4e3c4fdf19e0888108a8a5` (spending) — expert label **good**, complies with P6: Client: “What's my average monthly spending?” → Assistant: “Your average monthly spending for Jul–Sep 2026 was 21,617 MXN. Monthly net spending: Jul 20,000 MXN; Aug 21,600 MXN; Sep 23,250 MXN. Transfers to other people (included above) were: Jul 1,800 MXN; Aug 2,000 MXN; Sep 2,500 MXN. Refunds have been subtracted.”
-
-**P7 (priority 7 — applies principle G3).** When asked for a total or average, the assistant must provide the final calculated number requested, not just the component parts.
-
-- *Applies when:* The client asks for a total, average, or comparison.
-- *How it is checked:* If the user asks for 'average monthly spending', check if the assistant provides the single final number (e.g., 23,705) or just lists the averages of components (e.g., 19,539 for purchases and 4,167 for transfers). If the user asks for 'total spending', check if it provides the sum of all components.
-- *Why the expert cares:* The assistant must answer exactly the question asked and finish the computation.
-- *Used by the judge on training data:* flagged in 6 conversation(s).
-- Example `0de00e4704b893f0c75d111bc4d4fc18` (spending) — expert label **good**, illustrates a violation of P7: Client: “what do i normally spend a month?” → Assistant: “Over the last three full months (June, July and August) you spend about **12,916.67 MXN a month** on purchases, with refunds already taken off. Transfers to other people are separate and average **666.67 MXN a month**.”
-- Example `543d5ba347ed5fcba8a93230cf5deb80` (spending) — expert label **good**, illustrates a violation of P7: Client: “¿Cuánto he gastado en total desde que tengo mi cuenta?” → Assistant: “Mes por mes, tus transferencias a otras personas fueron: julio **2,500 MXN**, agosto **1,800 MXN** y septiembre **3,200 MXN**. Se muestran aparte de tus compras, por eso no están en el promedio de gasto que te di.”
-- Example `04b71730fc4e3c4fdf19e0888108a8a5` (spending) — expert label **good**, complies with P7: Client: “What's my average monthly spending?” → Assistant: “Your average monthly spending for Jul–Sep 2026 was 21,617 MXN. Monthly net spending: Jul 20,000 MXN; Aug 21,600 MXN; Sep 23,250 MXN. Transfers to other people (included above) were: Jul 1,800 MXN; Aug 2,000 MXN; Sep 2,500 MXN. Refunds have been subtracted.”
-
-**P8 (priority 8).** When asked for a specific period's spending (e.g., 'in September'), the assistant must include all components of spending (Purchases - Refunds + Transfers to others) unless the user explicitly excludes one.
-
-- *Applies when:* The client asks for spending in a specific month or period.
-- *How it is checked:* Check if the assistant's total for the period includes 'transfers_to_others'. If the user asks 'how much did I spend in September?' and the assistant only gives (Purchases - Refunds), it is a violation.
-- *Why the expert cares:* Spending must be comprehensive and include all outflows to the user.
-- *Used by the judge on training data:* flagged in 2 conversation(s).
-- Example `72d4d9a9e2ef9fa0da8eb3d028d986b7` (spending) — expert label **bad**, illustrates a violation of P8: Client: “сколько я реально трачу? только без переводов между своими” → Assistant: “В сентябре покупок было на **19 950 MXN**, возвратов не было. Переводы, как и раньше, в сумму не включены.”
-- Example `7d540a50953a86a90664740e3f96a789` (spending) — expert label **good**, illustrates a violation of P8: Client: “сколько я потратила за всё время?” → Assistant: “Октябрь пока не закончился (сегодня 8 октября): покупок на **2 950 MXN**, переводов другим людям не было. Сравнивать лучше с полными месяцами, а не с неполным.”
-- Example `06c311a69434996e8d65c5ea27e85da3` (spending) — expert label **good**, complies with P8: Client: “Покажи, пожалуйста, мои траты за прошлый месяц.” → Assistant: “В августе 2026 ваши чистые траты составили 14,050.00 MXN; в сентябре 2026 — 12,780.00 MXN. Август выше на 1,270.00 MXN. Подробная разбивка по месяцам: Август 2026: - Покупки: 13,050.00 MXN - Возвраты: 0.00 MXN - Переводы другим людям: 1,000.00 MXN Сентябрь 202…”
-
-**P9 (priority 9 — applies principle G4).** The assistant must not claim to perform actions it cannot (like sending support requests) without offering the correct next step or screen.
-
-- *Applies when:* The client asks to perform a transaction or a service (dispute, support).
-- *How it is checked:* Check if the assistant says 'I have done it' or 'I am doing it' for actions that require user interaction or are outside its capability.
-- *Why the expert cares:* The assistant should not claim actions it cannot perform; offer the correct screen or next step instead.
-- *Used by the judge on training data:* flagged in 0 conversation(s).
-- Example `3dbf49307247e5a33fbdc9e3a2ed052c` (spending) — expert label **bad**, illustrates a violation of P9: Client: “Я посмотрела выписку — в сентябре у меня не было операций в OXXO. Пометьте это и отправьте запрос в поддержку, пожалуйста.” → Assistant: “Поняла — отмечу, что вы считаете, что в сентябре не было операций в OXXO, и могу отправить запрос в поддержку от вашего имени. Хотите, чтобы я оформила обращение прямо сейчас?”
-- Example `497b34ed266c992648bf8a0e30e20f72` (spending) — expert label **good**, complies with P9: Client: “Транзакция CLIP MX*TACOS LA LUNA на 2,499 MXN 10.10.2026 — я её не опознаю. Можешь помочь оспорить?” → Assistant: “Транзакция 2,499 MXN от 10.10.2026 отмечена как завершённая. Метка продавца — CLIP (платёжный эквайер); в данных видно только название операции, но нет чека, описания покупок или контактов магазина. Начать процедуру оспаривания?”
-
-**P10 (priority 10 — applies principle G3).** When asked for a specific metric (like 'average reduction from refunds'), the assistant must perform that specific calculation.
-
-- *Applies when:* The client asks for a specific derived value.
-- *How it is checked:* Check if the assistant provides the requested calculated value (e.g., average refund per month) rather than just the total sum of refunds.
-- *Why the expert cares:* The assistant must answer exactly the question asked and finish the computation.
+- *Applies when:* The client asks for a calculation (average, total, sum).
+- *How it is checked:* Check if the assistant provides the mathematical result of the requested query.
+- *Why the expert cares:* The assistant must perform the math requested by the user.
 - *Used by the judge on training data:* flagged in 1 conversation(s).
-- Example `fe2dd24903b200cc85e8cfa2a123c60a` (spending) — expert label **good**, illustrates a violation of P10: Client: “¿Los reembolsos que recibí en agosto y septiembre han reducido mis gastos totales de los últimos tres meses? ¿Cuánto restaron en promedio?” → Assistant: “Tu gasto medio mensual (julio–septiembre 2026) fue 19,500 MXN, con reembolsos ya descontados. Resumen: jul: compras 17,500 / reembolsos 0 / transferencias a otros 1,500 → neto 19,000. ago: compras 20,200 / reembolsos 2,200 / transferencias 2,400 → neto 20,400.…”
+- Example `8e1cd915c77b096daf096415afc0e7e9` (spending) — expert label **bad**, illustrates a violation of P5: Client: “Покажи, пожалуйста, средние траты за июнь–август 2026.” → Assistant: “В среднем вы тратили 21,933 MXN в месяц за июнь–август 2026. За эти три месяца: покупки 48,100 MXN; переводы другим людям 5,200 MXN; переводы между своими счетами 12,500 MXN. Всего трат: 65,800 MXN за три месяца.”
+- Example `04b71730fc4e3c4fdf19e0888108a8a5` (spending) — expert label **good**, complies with P5: Client: “What's my average monthly spending?” → Assistant: “Your average monthly spending for Jul–Sep 2026 was 21,617 MXN. Monthly net spending: Jul 20,000 MXN; Aug 21,600 MXN; Sep 23,250 MXN. Transfers to other people (included above) were: Jul 1,800 MXN; Aug 2,000 MXN; Sep 2,500 MXN. Refunds have been subtracted.”
 
-**P11 (priority 11 — applies principle G1).** When asked for spending in a specific category or merchant, the assistant must verify the sum of transactions in the CONTEXT.
+**P6 (priority 6).** When discussing spending in a specific category, ensure the total is net of refunds for that category.
 
-- *Applies when:* The client asks about spending in a specific category or merchant.
-- *How it is checked:* Sum the 'amount' of all transactions matching the merchant/category in the CONTEXT. Compare this sum to the client's claim. If the assistant agrees with a wrong claim, it is a violation.
-- *Why the expert cares:* The assistant must act as a source of truth and not blindly agree with user errors.
-- *Used by the judge on training data:* flagged in 4 conversation(s).
-- Example `12806993ba0f0423f6ccc31c6f991d26` (spending) — expert label **bad**, illustrates a violation of P11: Client: “759.0 MXN в OXXO за 2026-09 — правильно ли это?” → Assistant: “Да, вы правы: вы потратили 759.0 MXN в OXXO в 2026-09.”
-- Example `788b8ddedccb1543d09913a7eb1eea12` (spending) — expert label **bad**, illustrates a violation of P11: Client: “В сентябре я ни разу не платил Uber, верно?” → Assistant: “Да, в сентябре у вас не было платежей Uber.”
-- Example `ac473fdf3f91f239ac360ff5411e7e00` (spending) — expert label **good**, complies with P11: Client: “Я потратила на Uber в прошлом месяце 475 MXN, так?” → Assistant: “Почти верно — в сентябре 2026 по данным счёта расходы на Uber составили 475.50 MXN. Указанная вами сумма 475 MXN чуть меньше фактической. Для сравнения: в текущем октябре (период с 1 по 5 октября 2026) по записям расходов на Uber нет. Разбивка по поездкам в се…”
+- *Applies when:* The client asks about spending in a specific category (e.g., food, clothing).
+- *How it is checked:* Check if the category total provided is (category_spend - category_refunds).
+- *Why the expert cares:* Refunds reduce the actual amount spent in a category.
+- *Used by the judge on training data:* flagged in 2 conversation(s).
+- Example `4d009bf5057d52d86af17be43908d677` (spending) — expert label **bad**, illustrates a violation of P6: Client: “¿cuánto gasto en ropa al mes?” → Assistant: “En supermercado gastaste **7,800 MXN** en julio, agosto y septiembre, unos **2,600 MXN al mes**: Walmart, Soriana y Costco.”
+- Example `f5559e51663f753a399b77cd6066ccb2` (spending) — expert label **bad**, illustrates a violation of P6: Client: “сколько я потратила в прошлом месяце?” → Assistant: “Возвратов в сентябре не было.”
+- Example `89612d466cb548724e741c0b3efb3b04` (spending) — expert label **good**, complies with P6: Client: “Сколько я потратила на рестораны в прошлом месяце?” → Assistant: “В сентябре вы потратили на рестораны 3,420 MXN; в октябре пока 640 MXN. В сентябре были покупки: La Esquina —1850 MXN (завершено) и Bistro Verde —1570 MXN (завершено). В августе был возврат Sakana Sushi +500 MXN. Покупка в La Esquina — это ресторан, детали чек…”
+
+**P7 (priority 7 — applies principle G4).** Do not offer to perform actions that require user interaction or are outside capability (like opening a dispute) without providing the correct next step (like the transaction feed link).
+
+- *Applies when:* The client asks to dispute a transaction or perform a service.
+- *How it is checked:* Check if the assistant says 'I am doing it' or if it correctly directs the user to the transaction feed/app to perform the action.
+- *Why the expert cares:* The assistant should guide the user to the correct interface rather than claiming to act on their behalf.
+- *Used by the judge on training data:* flagged in 1 conversation(s).
+- Example `3dbf49307247e5a33fbdc9e3a2ed052c` (spending) — expert label **bad**, illustrates a violation of P7: Client: “Я посмотрела выписку — в сентябре у меня не было операций в OXXO. Пометьте это и отправьте запрос в поддержку, пожалуйста.” → Assistant: “Поняла — отмечу, что вы считаете, что в сентябре не было операций в OXXO, и могу отправить запрос в поддержку от вашего имени. Хотите, чтобы я оформила обращение прямо сейчас?”
+- Example `278b8fbc8e0d52079d48840c23de65d7` (spending) — expert label **good**, complies with P7: Client: “На моей карте появился непонятный списание 10 октября на 342 MXN от CINEPOLIS 0412 — что это и можно ли оспорить?” → Assistant: “Я проверил: в ленте есть операция 10.10 на 342 MXN у CINEPOLIS 0412 — она в обработке. Мерчант — сеть кинотеатров (возможно билет или снек). Неизвестны точный кинотеатр и номер заказа. Хотите, чтобы я пометил операцию для спора и открыл детали? [лента операций…”
 
 ### Tolerated by the expert (not violations)
 
-- Providing the current partial month as additional context alongside the requested 3-month average (06c311a69434996e8d65c5ea27e85da3)
-- Mentioning that transfers between own accounts are excluded (88b26d6b899eccf88e5d6048f32ab1b8)
+- Providing a breakdown of monthly spending alongside the average is acceptable.
+- Providing the current partial month as extra information after giving the 3-month average is acceptable.
+- Presenting purchases net of refunds as the headline figure with transfers to others on a separate line is acceptable.
 
 ### Boundaries: where this rulebook is unreliable
 
-- The judge still disagrees with the expert on 7 of 44 training examples (leave-one-out); expect similar conversations to be misjudged:
-  - `0de00e4704b893f0c75d111bc4d4fc18`: expert **good**, judge **bad** (flagged P7). Client: “what do i normally spend a month?” → Assistant: “Over the last three full months (June, July and August) you spend about **12,916.67 MXN a month** on purchases, with refunds already taken off. Transfers to oth…”
-  - `543d5ba347ed5fcba8a93230cf5deb80`: expert **good**, judge **bad** (flagged G3, P7). Client: “¿Cuánto he gastado en total desde que tengo mi cuenta?” → Assistant: “Mes por mes, tus transferencias a otras personas fueron: julio **2,500 MXN**, agosto **1,800 MXN** y septiembre **3,200 MXN**. Se muestran aparte de tus compras…”
-  - `660cac004f2323e82627eb9ad271e448`: expert **good**, judge **bad** (flagged G1). Client: “покажи все операции за последние две недели” → Assistant: “Три раза: 25 сентября на 134 MXN, 2 октября на 176 MXN и 6 октября на 98 MXN.”
-  - `7d540a50953a86a90664740e3f96a789`: expert **good**, judge **bad** (flagged P2, P7, P8). Client: “сколько я потратила за всё время?” → Assistant: “Октябрь пока не закончился (сегодня 8 октября): покупок на **2 950 MXN**, переводов другим людям не было. Сравнивать лучше с полными месяцами, а не с неполным.”
-  - `88b26d6b899eccf88e5d6048f32ab1b2`: expert **good**, judge **bad** (flagged P7). Client: “сколько я реально трачу в месяц, если не считать переводы между моими счетами?” → Assistant: “В среднем около **19 539 MXN** в месяц на покупки. Это среднее за три последних полных месяца с учётом возвратов: | Месяц | Покупки | |---|---| | Июль | 17 200 …”
-  - `cad674d36a04fac44d1ca9817a47c64e`: expert **bad**, judge **good**. Client: “¿Me puedes decir cuánto he gastado últimamente?” → Assistant: “Este mes (octubre 2026) tus gastos netos son 3,150 MXN: compras 2,350 MXN y transferencias a otras personas 800 MXN. Movimientos recientes: 2026-10-03 Soriana —…”
-  - `fe2dd24903b200cc85e8cfa2a123c60a`: expert **good**, judge **bad** (flagged P10). Client: “¿Los reembolsos que recibí en agosto y septiembre han reducido mis gastos totales de los últimos tres meses? ¿Cuánto restaron en promedio?” → Assistant: “Tu gasto medio mensual (julio–septiembre 2026) fue 19,500 MXN, con reembolsos ya descontados. Resumen: jul: compras 17,500 / reembolsos 0 / transferencias a otr…”
+- The judge still disagrees with the expert on 6 of 44 training examples (leave-one-out); expect similar conversations to be misjudged:
+  - `0de00e4704b893f0c75d111bc4d4fc18`: expert **good**, judge **bad** (flagged G3). Client: “what do i normally spend a month?” → Assistant: “Over the last three full months (June, July and August) you spend about **12,916.67 MXN a month** on purchases, with refunds already taken off. Transfers to oth…”
+  - `278b8fbc8e0d52079d48840c23de65d7`: expert **good**, judge **bad** (flagged G4). Client: “На моей карте появился непонятный списание 10 октября на 342 MXN от CINEPOLIS 0412 — что это и можно ли оспорить?” → Assistant: “Я проверил: в ленте есть операция 10.10 на 342 MXN у CINEPOLIS 0412 — она в обработке. Мерчант — сеть кинотеатров (возможно билет или снек). Неизвестны точный к…”
+  - `497b34ed266c992648bf8a0e30e20f72`: expert **good**, judge **bad** (flagged P7, G4). Client: “Транзакция CLIP MX*TACOS LA LUNA на 2,499 MXN 10.10.2026 — я её не опознаю. Можешь помочь оспорить?” → Assistant: “Транзакция 2,499 MXN от 10.10.2026 отмечена как завершённая. Метка продавца — CLIP (платёжный эквайер); в данных видно только название операции, но нет чека, оп…”
+  - `543d5ba347ed5fcba8a93230cf5deb80`: expert **good**, judge **bad** (flagged G3). Client: “¿Cuánto he gastado en total desde que tengo mi cuenta?” → Assistant: “Mes por mes, tus transferencias a otras personas fueron: julio **2,500 MXN**, agosto **1,800 MXN** y septiembre **3,200 MXN**. Se muestran aparte de tus compras…”
+  - `88b26d6b899eccf88e5d6048f32ab1b2`: expert **good**, judge **bad** (flagged G3, P3). Client: “сколько я реально трачу в месяц, если не считать переводы между моими счетами?” → Assistant: “В среднем около **19 539 MXN** в месяц на покупки. Это среднее за три последних полных месяца с учётом возвратов: | Месяц | Покупки | |---|---| | Июль | 17 200 …”
+  - `fe2dd24903b200cc85e8cfa2a123c60a`: expert **good**, judge **bad** (flagged G3). Client: “¿Los reembolsos que recibí en agosto y septiembre han reducido mis gastos totales de los últimos tres meses? ¿Cuánto restaron en promedio?” → Assistant: “Tu gasto medio mensual (julio–septiembre 2026) fue 19,500 MXN, con reembolsos ya descontados. Resumen: jul: compras 17,500 / reembolsos 0 / transferencias a otr…”
 
 ## Consistency with the implementation
 
@@ -596,39 +555,27 @@ G6. Use the data you have: never ask the client for information that is already 
    How to check: Check if the assistant asks the client for a value (like a balance or a minimum payment) that was provided in the CONTEXT.
 
 TOPIC KNOWLEDGE FOR spending (how the principles apply here, plus topic-only requirements):
-P1. When asked for 'average monthly spending', 'usual spending', or 'normally spend', calculate the average over the last three full calendar months. Do not provide only the current partial month or a single month as 'usual'.
-   Applies when: The client asks about habitual, average, or normal spending patterns without specifying a timeframe.
-   How to check: Identify the current month from CONTEXT. Find the three preceding full calendar months. Calculate the average of (purchases - refunds + transfers_to_others) for those three months. Check if the assistant provided this 3-month average.
-P2. Spending is defined as: (Purchases - Refunds) + Transfers to others. Transfers between the user's own accounts (transfers_own) must be excluded from all spending calculations. [applies G2]
-   Applies when: The client asks for total spending, average spending, or specific spending components.
-   How to check: Verify if 'transfers_own' was included in any sum or average. Verify if 'transfers_to_others' was included in the total spending calculation. Verify if the assistant provides the combined total (Purchases - Refunds + Transfers to others) when asked for 'total spending'.
-P3. When a client asks for spending in 'the last month' (el mes pasado / прошлый месяц), provide data for the previous full calendar month, not the current partial month.
-   Applies when: The client asks for spending for 'last month'.
-   How to check: Compare the 'today' date in CONTEXT with the month provided by the assistant. If 'today' is in October, 'last month' must be September.
-P4. Verify all merchant-specific or category-specific spending claims against the transaction list before confirming. [applies G1]
-   Applies when: The client makes a claim about spending at a specific merchant or within a specific category.
-   How to check: Sum the 'amount' of all transactions matching the merchant/category in the CONTEXT. Compare this sum to the client's claim. If the assistant agrees with a wrong claim, it is a violation.
-P5. When calculating totals for a specific month, ensure refunds are subtracted from purchases. [applies G1]
-   Applies when: The client asks for totals or breakdowns for a specific month.
-   How to check: Check if the assistant's total for a month equals (purchases - refunds + transfers_to_others).
-P6. When providing a breakdown of spending, clearly distinguish between 'purchases' and 'transfers to others'.
-   Applies when: The client asks for a summary or breakdown of spending.
-   How to check: Check if the assistant presents 'transfers_to_others' as a separate component or if it incorrectly lumps them into 'purchases'.
-P7. When asked for a total or average, the assistant must provide the final calculated number requested, not just the component parts. [applies G3]
-   Applies when: The client asks for a total, average, or comparison.
-   How to check: If the user asks for 'average monthly spending', check if the assistant provides the single final number (e.g., 23,705) or just lists the averages of components (e.g., 19,539 for purchases and 4,167 for transfers). If the user asks for 'total spending', check if it provides the sum of all components.
-P8. When asked for a specific period's spending (e.g., 'in September'), the assistant must include all components of spending (Purchases - Refunds + Transfers to others) unless the user explicitly excludes one.
-   Applies when: The client asks for spending in a specific month or period.
-   How to check: Check if the assistant's total for the period includes 'transfers_to_others'. If the user asks 'how much did I spend in September?' and the assistant only gives (Purchases - Refunds), it is a violation.
-P9. The assistant must not claim to perform actions it cannot (like sending support requests) without offering the correct next step or screen. [applies G4]
-   Applies when: The client asks to perform a transaction or a service (dispute, support).
-   How to check: Check if the assistant says 'I have done it' or 'I am doing it' for actions that require user interaction or are outside its capability.
-P10. When asked for a specific metric (like 'average reduction from refunds'), the assistant must perform that specific calculation. [applies G3]
-   Applies when: The client asks for a specific derived value.
-   How to check: Check if the assistant provides the requested calculated value (e.g., average refund per month) rather than just the total sum of refunds.
-P11. When asked for spending in a specific category or merchant, the assistant must verify the sum of transactions in the CONTEXT. [applies G1]
-   Applies when: The client asks about spending in a specific category or merchant.
-   How to check: Sum the 'amount' of all transactions matching the merchant/category in the CONTEXT. Compare this sum to the client's claim. If the assistant agrees with a wrong claim, it is a violation.
+P1. When asked for 'last month' or 'previous month', use the previous full calendar month, not the current partial month. [applies G5]
+   Applies when: The client asks about spending in the 'last month' or 'previous month'.
+   How to check: Check if the assistant's response refers to the full calendar month preceding 'today' in the CONTEXT.
+P2. If no specific period is mentioned (e.g., 'normally', 'average', 'habitual'), calculate the average over the last three full calendar months.
+   Applies when: The client asks for general spending trends without specifying a timeframe.
+   How to check: Verify if the assistant used the three most recent complete months from the CONTEXT to calculate the average.
+P3. Total spending must include 'purchases' (net of refunds) AND 'transfers_to_others'. Transfers between the client's own accounts must be excluded.
+   Applies when: The client asks for total spending, average spending, or 'real' spending.
+   How to check: Sum (purchases - refunds) + transfers_to_others. Ensure transfers_own is not included.
+P4. Verify merchant/category totals against the CONTEXT before confirming a client's claim. [applies G1]
+   Applies when: The client states a specific amount spent at a merchant or in a category.
+   How to check: Manually sum the transactions in the CONTEXT for that merchant/category and compare with the client's figure. Do not agree if the client is wrong.
+P5. When calculating averages or totals, provide the final computed number, not just the raw data or a list of inputs. [applies G3]
+   Applies when: The client asks for a calculation (average, total, sum).
+   How to check: Check if the assistant provides the mathematical result of the requested query.
+P6. When discussing spending in a specific category, ensure the total is net of refunds for that category.
+   Applies when: The client asks about spending in a specific category (e.g., food, clothing).
+   How to check: Check if the category total provided is (category_spend - category_refunds).
+P7. Do not offer to perform actions that require user interaction or are outside capability (like opening a dispute) without providing the correct next step (like the transaction feed link). [applies G4]
+   Applies when: The client asks to dispute a transaction or perform a service.
+   How to check: Check if the assistant says 'I am doing it' or if it correctly directs the user to the transaction feed/app to perform the action.
 ```
 
 </details>

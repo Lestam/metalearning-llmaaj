@@ -38,7 +38,9 @@
   "HUMAN REVIEW: Apply the terms of the product the client actually has, read from the client's data: the rate for their subscription tier (plus_subscription), the term, the withdrawal restriction. Never quote another tier's rate or a generic rate; the rule points to the CONTEXT fields, not to fixed numbers, so it stays valid when tariffs change."
  ],
  "spending": [
-  "Spending = purchases - refunds + transfers_to_others; transfers_own are never spending.",
+  "Transfers to other people are spending and must be reported; transfers between the client's own accounts are never spending; refunds are subtracted from purchases. A violation is silently dropping transfers to other people, counting own transfers, or ignoring refunds.",
+  "TOLERATED (presentation): purchases net of refunds as the headline figure with transfers to other people on a separate line is accepted - one combined total is not required.",
+  "TOLERATED: when the client asks several things, answering the main figure and pointing to the transaction feed link for the full list is accepted; for an open-ended period a monthly average over the last three full months is accepted.",
   "'Last month' = the previous full calendar month relative to today, not the current partial month.",
   "No explicit period ('usual', 'habitual', 'normally', 'lately', 'recently', 'how much do I spend', 'average monthly'): the answer is the average over the last three full calendar months (the current partial month may be added as extra information, never given alone). Answering with the current partial month only (cad674d3…, 33c2df30…) or with one single month presented as 'usual' (5f9ae3d8…) is a violation - and offering to compute the three-month average instead of giving it does not repair it (33c2df30…).",
   "Merchant or category totals are sums of the matching transactions, net of their refunds; check them before confirming a client's figure.",

@@ -19,12 +19,12 @@
   },
   {
    "name": "Rulebook Judge (this project)",
-   "macro": 0.923,
+   "macro": 0.934,
    "by_topic": [
     1.0,
     0.909,
     1.0,
-    0.783
+    0.826
    ]
   }
  ],
@@ -47,7 +47,7 @@
   },
   {
    "step": "Nearest examples + fresh adapt",
-   "macro": 0.923
+   "macro": 0.934
   }
  ]
 }

@@ -17,6 +17,18 @@ body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,-apple-
 .b2{width:220px;height:220px;background:var(--mint);top:-60px;right:-40px;opacity:.7}
 .b3{width:90px;height:90px;background:var(--yellow);top:30px;right:420px;opacity:.8;filter:blur(6px)}
 header,main{position:relative;z-index:1}
+.floaters{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.f{position:absolute;display:block;opacity:.55;animation:drift 22s ease-in-out infinite alternate}
+.f1{width:120px;height:120px;border-radius:50%;background:var(--blue-soft);top:12%;left:3%;animation-duration:26s}
+.f2{width:70px;height:70px;border-radius:20px;background:var(--lilac);top:62%;left:6%;transform:rotate(18deg);animation-duration:19s}
+.f3{width:90px;height:90px;border-radius:50%;border:10px solid var(--mint);top:78%;left:44%;animation-duration:24s}
+.f4{width:54px;height:54px;border-radius:14px;background:var(--yellow);top:30%;right:4%;opacity:.45;animation-duration:17s}
+.f5{width:150px;height:150px;border-radius:50%;border:2px dashed var(--blue);top:48%;right:2%;opacity:.25;animation-duration:30s}
+.f6{width:36px;height:36px;border-radius:50%;background:var(--blue);top:88%;right:18%;opacity:.25;animation-duration:15s}
+.f7{width:80px;height:26px;border-radius:999px;background:var(--good-soft);top:6%;left:38%;animation-duration:21s}
+.f8{width:0;height:0;border-left:34px solid transparent;border-right:34px solid transparent;border-bottom:58px solid var(--bad-soft);top:40%;left:1%;opacity:.6;animation-duration:28s}
+@keyframes drift{0%{translate:0 0;rotate:0deg}50%{translate:40px -50px;rotate:25deg}100%{translate:-30px 30px;rotate:-15deg}}
+@media (prefers-reduced-motion:reduce){.f{animation:none}}
 header{max-width:1440px;margin:0 auto;padding:22px 32px 8px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .logo{width:42px;height:42px;color:var(--blue)}
 h1{margin:0;font-size:26px;letter-spacing:-.02em}
@@ -149,6 +161,9 @@ svg text{font-family:inherit}
 </head>
 <body>
 <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<div class="floaters" aria-hidden="true">
+  <i class="f f1"></i><i class="f f2"></i><i class="f f3"></i><i class="f f4"></i><i class="f f5"></i><i class="f f6"></i><i class="f f7"></i><i class="f f8"></i>
+</div>
 <header>
   <svg class="logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M3 5.5c3-1.5 6-1.5 9 .5v14c-3-2-6-2-9-.5z"/><path d="M21 5.5c-3-1.5-6-1.5-9 .5v14c3-2 6-2 9-.5z"/></svg>
   <div><h1>Rulebook Judge · Test range</h1>

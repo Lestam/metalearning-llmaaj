@@ -8,12 +8,12 @@
   "Answer exactly the question asked and finish the computation: interpret the requested period or scenario correctly and give the resulting number, not just the inputs.",
   "Count as the client's money only what is really theirs and usable now: credit limits are not own money, held amounts and locked deposits are not available, transfers between own accounts are not spending.",
   "State product conditions correctly: withdrawal restrictions, interest rules and the rate that matches the client's subscription.",
+  "HUMAN REVIEW: Answer first: start with the number or yes/no the client asked for, then the breakdown; the picture must be complete (every account, the card debt, held money). Length itself is not a defect - long, detailed replies are accepted when they are correct and complete.",
   "TOLERATED (not a violation): offering to do something or asking whether the client wants it done (e.g. 'Do you want me to mark it for dispute?', 'I can take you to the payment screen'); only claiming it was already done is a violation.",
   "TOLERATED: asking the client for information that is NOT in the CONTEXT (e.g. their monthly expenses when no spending data is given).",
   "TOLERATED: approximate figures ('about', rounding, simple-interest estimates, an approximate monthly interest), as long as they follow from the right inputs and rates.",
   "TOLERATED: format and wording choices (tables, lists, markdown, link labels in another language, a different order of the breakdown), and extra correct information such as the current partial month in addition to the full month asked for.",
   "TOLERATED: saying honestly that the data does not show something (items bought, exact release date of a hold) instead of guessing.",
-  "HUMAN REVIEW: Answer first, proportionally: put the number or yes/no the client asked for at the start; a simple question deserves a short, simple answer; burying the answer under information the client did not ask for, or giving it in fragments, misleads.",
   "HUMAN REVIEW: Answer the question that was asked completely (e.g. list all accounts when asked what is on the accounts, compute the remainder when asked what will remain) and point to the target action with the screen link instead of sending the client to work it out.",
   "HUMAN REVIEW: Correct the client right away when their figure is wrong and give the right figure; never first agree and later state a different number.",
   "HUMAN REVIEW: The assistant has the client's product terms in the CONTEXT and must apply them (tier, rate, term, restrictions, dates) instead of generic product knowledge; when terms change, the data changes, not the rule."
@@ -27,7 +27,9 @@
   "Held money (on_hold > 0 on a Cuenta Veluna): whenever the assistant states how much money the client has NOW, the held amount must be either subtracted or named explicitly ('16,900 of which 3,100 held, 13,800 available'); stating the gross balance as money the client has, with no mention of the hold, is a violation.",
   "Affordability ('can I afford X', 'is X within my means'): decide only from own usable funds (Cuenta Veluna minus on_hold, plus Ahorro Flexible, optionally minus current_debt); saying the client 'can afford' something because the credit line covers it is a violation, even if the own-funds figure was given first.",
   "TOLERATED (accounting basis): the expert accepts any arithmetically consistent basis as long as the hold and the debt are disclosed - 'own funds' may be stated as available (balance minus on_hold) or as gross with the held part named; 'net' = that own-funds figure minus current_debt; Ahorro Fijo may be reported inside a 'total own funds' figure if it is labelled as locked, or kept separate. Do not flag a correct computation on one of these bases as a math error because another basis would give a different number.",
-  "TOLERATED: a short answer to a short question ('how much is on Cuenta Veluna?' -> one number) is good; the completeness requirement applies to questions about the whole position, not to follow-ups about one account."
+  "TOLERATED: a short answer to a short question ('how much is on Cuenta Veluna?' -> one number) is good; the completeness requirement applies to questions about the whole position, not to follow-ups about one account.",
+  "Credit is never summed into the client's money, even when the client explicitly asks to 'count the card too' (c09ec6bd…): the correct answer gives own funds and states the available credit separately as the bank's money; a total that adds the credit limit is a violation regardless of the request.",
+  "TOLERATED: length and detail are not defects by themselves - a long, complete answer with all figures correct is good (ccb20080…); every 'too long' bad example in training also ignores a hold, adds credit or buries a wrong figure, and that is what makes it bad."
  ],
  "savings": [
   "Ahorro Fijo cannot be withdrawn before its maturity date, not even with lost interest.",
@@ -38,8 +40,10 @@
  "spending": [
   "Spending = purchases - refunds + transfers_to_others; transfers_own are never spending.",
   "'Last month' = the previous full calendar month relative to today, not the current partial month.",
-  "'Usual' / 'average monthly' / 'recent' spending = average over the last three full calendar months.",
-  "Merchant or category totals are sums of the matching transactions, net of their refunds; check them before confirming a client's figure."
+  "No explicit period ('usual', 'habitual', 'normally', 'lately', 'recently', 'how much do I spend', 'average monthly'): the answer is the average over the last three full calendar months (the current partial month may be added as extra information, never given alone). Answering with the current partial month only (cad674d3…, 33c2df30…) or with one single month presented as 'usual' (5f9ae3d8…) is a violation - and offering to compute the three-month average instead of giving it does not repair it (33c2df30…).",
+  "Merchant or category totals are sums of the matching transactions, net of their refunds; check them before confirming a client's figure.",
+  "Transfers to other people ARE spending (shown as a separate line but counted); only transfers between the client's own accounts are excluded. When the client asks for spending 'without transfers between my own accounts', dropping transfers to others as well is a violation (72d4d9a9… vs 88b26d6b…).",
+  "Verify before agreeing: when the client states a merchant/category total or claims there were no operations at a merchant, recompute from the transactions; confirming a wrong claim (788b8dde…, 12806993…, 695c52a9…) or accepting it and offering to escalate without checking (3dbf4930…) is a violation."
  ],
  "credit": [
   "Paying only the minimum avoids late status but NOT interest; only no_interest_payment avoids interest.",

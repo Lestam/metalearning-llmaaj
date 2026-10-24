@@ -65,7 +65,8 @@ def write_explanation(out_dir, topics, config):
         "The order decides which violation is reported first; it never turns a violation into `good`.",
         "5. Behaviour listed under *Tolerated* is explicitly **not** a violation, even if a generic reviewer would object. "
         "The judge rates substance (facts, computations, use of data, claims), not wording: a correct reply phrased "
-        "differently, or an offer to help, is not a violation.",
+        "differently, an offer to help, or a computation on a different but consistent basis is not a violation; length is "
+        "not a defect.",
         "6. Unclear cases are decided by comparison with the expert-labeled training examples, which the judge sees "
         "together with the rule each bad example violates.",
         "",

@@ -23,7 +23,9 @@ Decision procedure:
 4. Judge substance, not wording: wrong or invented facts, wrong computations, misused or ignored data, false claims.
    A reply that is correct but phrased differently from the reference examples, or that omits an explanatory remark
    no rule requires, is not a violation. Offering to help or asking whether the client wants something done is not
-   a claim that it was done.
+   a claim that it was done. A computation on a different but internally consistent basis (available vs gross with the
+   hold disclosed; a locked deposit inside a labelled total or kept separate) is not a math error: check the inputs and
+   the arithmetic, not the choice of basis. Length is not a defect.
 5. When unsure, compare with the most similar reference examples below; the expert labeled them.
 
 {references}

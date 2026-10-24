@@ -86,6 +86,19 @@ td.num{font-variant-numeric:tabular-nums}
 .bar{height:8px;border-radius:4px;background:var(--accent)}
 .bar.base{background:var(--mut);opacity:.45}
 .hidden{display:none}
+.layers{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+.layer{display:grid;grid-template-columns:44px minmax(0,1.6fr) minmax(0,1fr);gap:16px;align-items:start;border:1px solid var(--line);border-radius:14px;padding:16px}
+@media(max-width:900px){.layer{grid-template-columns:44px 1fr}.layer .lc{grid-column:2}}
+.layer.now{border:2px solid var(--accent);background:var(--accent-soft)}
+.ln{width:44px;height:44px;border-radius:12px;background:var(--bubble-u);display:grid;place-items:center;font-weight:800;font-size:18px}
+.layer.now .ln{background:var(--accent);color:#fff}
+.lt{font-weight:700;font-size:16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ltag{font-weight:500;font-size:12px;color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:2px 10px}
+.today{font-size:12px;font-weight:700;background:var(--accent);color:#fff;border-radius:999px;padding:3px 10px}
+.ld{color:var(--mut);font-size:14px;margin-top:4px}
+.lc{display:flex;flex-wrap:wrap;gap:6px}
+.lc span{font-size:12px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.closing{margin-top:18px;font-size:16px;font-weight:600;border-left:4px solid var(--accent);padding:6px 0 6px 14px}
 .hint{color:var(--mut);font-size:13px}
 </style>
 </head>
@@ -97,7 +110,7 @@ td.num{font-variant-numeric:tabular-nums}
   </div>
   <span class="badge" id="model">✦ Gemma 4</span>
   <a href="/dashboard" style="margin-left:12px;border:1px solid var(--line);border-radius:999px;padding:6px 14px;color:var(--ink);text-decoration:none;font-size:13px;font-weight:600">◐ Dashboard</a>
-  <nav><button class="on" data-tab="try">Try it</button><button data-tab="rules">Learned rulebook</button><button data-tab="results">Results</button></nav>
+  <nav><button class="on" data-tab="try">Try it</button><button data-tab="rules">Learned rulebook</button><button data-tab="results">Results</button><button data-tab="next">Next: a layered judge</button></nav>
 </header>
 <main>
 <section id="tab-try" class="grid">
@@ -123,6 +136,25 @@ td.num{font-variant-numeric:tabular-nums}
 </section>
 <section id="tab-rules" class="card hidden"><div id="rulebook"></div></section>
 <section id="tab-results" class="card hidden"><div id="results"></div></section>
+<section id="tab-next" class="card hidden">
+  <h2 style="margin-top:0">Next: a layered judge</h2>
+  <p class="hint">Each layer takes the defect types it handles best; numbers refer to the defect catalogue learned from the expert's labels.</p>
+  <div class="layers">
+    <div class="layer"><div class="ln">1</div><div><div class="lt">Deterministic checks <span class="ltag">code, no model</span></div>
+      <div class="ld">Gemma extracts the figures the assistant stated; code recomputes them from the client data — net spending = purchases − refunds + transfers to others, own funds exclude credit, holds subtracted, due date / rate / Veluna+ read straight from the JSON.</div></div>
+      <div class="lc"><span>2 arithmetic</span><span>4 credit as money</span><span>5 hold / unfinished computation</span><span>7 tier rate, min payment, Fijo terms</span><span>8 "can't see the date"</span></div></div>
+    <div class="layer now"><div class="ln">2</div><div><div class="lt">Rulebook judge <span class="ltag">Gemma 4 + learned rules</span> <span class="today">what we built today</span></div>
+      <div class="ld">Semantic judgements that need interpretation: which period the client meant, an offer vs a claimed action, a complete vs fragmentary picture, agreeing with a wrong claim. The rulebook is versioned and editable by compliance.</div></div>
+      <div class="lc"><span>1 period basis</span><span>3 agreeing with a wrong claim</span><span>6 incomplete picture</span><span>9 figures drifting between turns</span></div></div>
+    <div class="layer"><div class="ln">3</div><div><div class="lt">Distilled classifier <span class="ltag">fine-tune, later</span></div>
+      <div class="ld">Once the rulebook is stable and thousands of verdicts exist: distil (context, dialogue → label + rule) into a small open model (Gemma E2B/E4B) for 100% of traffic in milliseconds and cents; the rulebook judge stays on a 5% sample to detect drift. Fine-tuning compiles the rulebook, it does not replace it.</div></div>
+      <div class="lc"><span>all, at scale</span></div></div>
+    <div class="layer"><div class="ln">4</div><div><div class="lt">Active labelling loop</div>
+      <div class="ld">The expert labels only where layers disagree or the judge is unsure (code says the number is right, the LLM says bad) — 5–10× less expert time, and every new label feeds the next <code>adapt</code> automatically.</div></div>
+      <div class="lc"><span>keeps 1–9 current as the product changes</span></div></div>
+  </div>
+  <p class="closing">Today we showed the expert's rules can be extracted and verified automatically. Next: half of them should need no model at all, and the other half should cost one Gemma call for the whole stream.</p>
+</section>
 </main>
 <div class="foot"><div id="foot"></div></div>
 <script>
@@ -199,7 +231,7 @@ function renderResults(){
      return `<tr><td>${i?esc(t.replace("_"," ")):"<b>"+t+"</b>"}</td><td class="num">${x.toFixed(3)}<div class="bar base" style="width:${x*100}%"></div></td><td class="num"><b>${y.toFixed(3)}</b><div class="bar" style="width:${y*100}%"></div></td></tr>`}).join("")+`</table>`;
 }
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
-  ["try","rules","results"].forEach(t=>$("tab-"+t).classList.toggle("hidden",t!==b.dataset.tab));});
+  ["try","rules","results","next"].forEach(t=>$("tab-"+t).classList.toggle("hidden",t!==b.dataset.tab));});
 load();
 </script>
 </body>

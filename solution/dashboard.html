@@ -135,6 +135,34 @@ svg text{font-family:inherit}
 .play span{font-weight:500;opacity:.85;font-variant-numeric:tabular-nums}
 .switch{margin-left:12px}
 .card.speaking{box-shadow:0 0 0 3px var(--blue),0 18px 40px rgba(29,99,255,.25);transform:translateY(-3px);transition:all .3s}
+@media (min-width:1500px){
+  body{height:100vh;overflow:hidden}
+  header{max-width:none;padding:10px 22px 6px;gap:14px}
+  h1{font-size:24px}
+  main{max-width:none;padding:6px 22px 14px;height:calc(100vh - 74px);grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:1fr 1fr 1fr;gap:12px}
+  .card{padding:12px 16px 30px;display:flex;flex-direction:column;min-height:0}
+  .card h2{font-size:16px}
+  [data-d=hero]{grid-area:1/1/2/4}[data-d=topics]{grid-area:1/4/2/9}[data-d=steps]{grid-area:1/9/2/13}
+  [data-d=errors]{grid-area:2/1/3/4}[data-d=rulebook]{grid-area:2/4/3/9}[data-d=business]{grid-area:2/9/3/13}
+  [data-d=fails]{grid-area:3/1/4/4}[data-d=tiles]{grid-area:3/4/4/9}[data-d=next]{grid-area:3/9/4/13}
+  #bars{flex:1;min-height:0;height:auto}
+  .num{font-size:54px}.score{margin:12px 0 10px}.gain{font-size:19px;padding:6px 12px}.gainnote{display:none}
+  .kpis{margin-top:10px}.kpi{padding:7px 10px}.kpi b{font-size:18px}
+  .steps{gap:6px;margin-top:6px}
+  .cm{margin-top:6px}.cm td{padding:6px 2px;font-size:18px}.cmnote{font-size:13px;margin-top:6px}
+  .prows{gap:7px;margin-top:8px}.prow{grid-template-columns:30px 1fr 22% 26px;align-items:center}.prow .pt{-webkit-line-clamp:1}
+  .prow .pb{grid-column:3;grid-row:1;margin:0;height:6px}.prow .pc{grid-column:4;grid-row:1}
+  .biz{grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.biz div{padding:7px 10px}.biz b{font-size:19px;white-space:nowrap}
+  .steps .bar{height:4px}.prow .pb{height:4px}
+  .card .more{bottom:8px}
+  .fails{margin-top:6px}.fails li{margin:6px 0;font-size:13px}
+  [data-d=tiles] .hint{display:none}
+  .tiles{grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;flex:1;min-height:0}
+  .tgroup{padding:7px 9px}.tgroup h3{margin-bottom:5px;font-size:12px}
+  .tgrid{gap:4px}.tile{width:24px;height:15px;border-radius:5px}
+  .omtl{margin-top:7px;font-size:13px}
+  .fixsum span{padding:2px 10px;font-size:12px}
+}
 .subs{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);max-width:860px;width:calc(100% - 40px);background:rgba(20,28,43,.92);color:#fff;border-radius:16px;padding:14px 20px;font-size:17px;line-height:1.45;z-index:30;display:none;text-align:center}
 .subs.on{display:block}
 .biz{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
@@ -208,10 +236,10 @@ svg text{font-family:inherit}
     <li>Defects absent from the training labels can be missed.</li></ol></section>
   <section data-d="business" class="card s7"><h2>💼 Business case</h2><div class="hint">measured on today's runs · price is an estimate</div>
     <div class="biz">
-      <div><b>$0.002</b><span>per judged conversation<br>(~8.2k in / 1.2k out tokens)</span></div>
-      <div><b>$0.55</b><span>per full <code>adapt</code> on 150 labels<br>(~20 min, mostly rate limits)</span></div>
-      <div><b>53% → 10%</b><span>bad replies a reviewer<br>would let through</span></div>
-      <div><b>~33 h → ~$2</b><span>1,000 conversations: expert<br>time* vs Gemma</span></div>
+      <div><b>$0.002</b><span>per judged conversation (~8.2k in / 1.2k out tokens)</span></div>
+      <div><b>$0.55</b><span>per full <code>adapt</code> on 150 labels (~20 min, mostly rate limits)</span></div>
+      <div><b>53% → 10%</b><span>bad replies a reviewer would let through</span></div>
+      <div><b>~33 h → ~$2</b><span>1,000 conversations: expert time* vs Gemma</span></div>
     </div><div class="hint" style="margin-top:8px">* assumption: ~2 min of expert time per conversation</div></section>
   <section data-d="next" class="card s5 omt"><h2>✨ One more thing</h2>
     <div class="omtl"><span>1</span>Deterministic checks — code recomputes the figures, no model</div>
@@ -233,7 +261,7 @@ const esc=s=>String(s??"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const TOP=["credit","savings","spending","financial_position"];
 function bars(s){
-  const svg=$("bars"),W=svg.clientWidth||520,H=250,L=34,B=40,gw=(W-L)/TOP.length,bw=Math.min(40,gw/3);
+  const svg=$("bars"),W=svg.clientWidth||520,H=Math.max(160,svg.clientHeight||250),L=34,B=40,gw=(W-L)/TOP.length,bw=Math.min(40,gw/3);
   const y=v=>H-B-v*(H-B-48);
   let h="";[0,.2,.4,.6,.8,1].forEach(v=>{h+=`<text x="0" y="${y(v)+4}" font-size="11" fill="${css('--mut')}">${v.toFixed(1)}</text><line x1="${L}" y1="${y(v)}" x2="${W}" y2="${y(v)}" stroke="${css('--line')}"/>`;});
   TOP.forEach((t,i)=>{const k=s.topics.indexOf(t),a=s.rows[0].by_topic[k],b=s.rows[1].by_topic[k],x=L+i*gw+gw/2;
@@ -353,6 +381,14 @@ function detail(key){
     sec("Conclusion",`<p>Most fixes are <b>bad replies plain Gemma accepted</b>: minimum payment "avoids interest", Fijo "can be withdrawn", spending totals with own transfers or without refunds.</p>`,"concl")]};
   const [title,body]=T[key];$("ovt").textContent=title;$("ovb").innerHTML=body;$("ov").classList.add("on");$("ov").scrollTop=0;location.hash=key;
 }
+function autoFit(){
+  if(innerWidth<1500)return;
+  document.querySelectorAll(".card[data-d]").forEach(c=>{
+    let z=1;c.style.fontSize="";
+    while(c.scrollHeight>c.clientHeight+1&&z>0.75){z-=0.04;c.style.fontSize=(z*100)+"%";
+      c.querySelectorAll(".num,.kpi b,.biz b,.cm td").forEach(e=>e.style.zoom=z);}
+  });
+}
 function closeDetail(){$("ov").classList.remove("on");history.replaceState(null,"",location.pathname);}
 let story=null,si=0,playing=false;const au=new Audio();
 async function playStory(){
@@ -387,7 +423,8 @@ async function load(){
   $("prows").innerHTML=d.principles.sort((x,y)=>y.caught-x.caught).map(p=>`<div class="prow" title="${esc(p.rule)}"><span class="pid">${esc(p.id)}</span><span class="pt">${esc(p.rule)}</span><span class="pc">${p.caught}</span><div class="pb"><i style="width:${p.caught/mx*100}%"></i></div></div>`).join("");
   const fixed=d.items.filter(x=>x.plain!==x.gold&&x.ours===x.gold).length,broke=d.items.filter(x=>x.plain===x.gold&&x.ours!==x.gold).length;
   $("fixsum").innerHTML=`<span style="background:var(--good-soft);color:var(--good)">fixed by the rulebook: ${fixed}</span><span style="background:var(--bad-soft);color:var(--bad)">broken by it: ${broke}</span>`;
-  addEventListener("resize",()=>bars(s));
+  addEventListener("resize",()=>{bars(s);autoFit();});
+  autoFit();
   document.querySelectorAll(".card[data-d]").forEach(el=>{el.insertAdjacentHTML("beforeend",'<span class="more">Open details →</span>');
     el.addEventListener("click",e=>{if(!e.target.closest(".tile"))detail(el.dataset.d);});});
   $("back").onclick=closeDetail;addEventListener("keydown",e=>{if(e.key==="Escape")closeDetail();});

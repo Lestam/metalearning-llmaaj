@@ -1,0 +1,38 @@
+[
+ {
+  "block": "intro",
+  "text": "Banks check their AI assistants with an AI judge. But a generic judge doesn't know the bank's rules. So it misses mistakes a real expert would catch. We built a judge that learns the expert's rules. Gemma 4 reads conversations the expert marked good or bad, and writes down the rules behind those labels. Then it tests every rule on the data, and keeps only the ones that hold up. The judge applies exactly that rulebook to new conversations."
+ },
+ {
+  "block": "hero",
+  "text": "Same model. Same test. Same metric. Plain Gemma agrees with the expert seventy-nine percent of the time. With the learned rulebook, ninety-one. Bad replies slipping through drop from sixteen out of thirty, to three."
+ },
+ {
+  "block": "topics",
+  "text": "Every topic improves. Spending gains the most, because its rules are definitions nobody can guess. Refunds come off. Transfers between your own accounts are not spending."
+ },
+ {
+  "block": "steps",
+  "text": "Each step was measured. The rulebook gave the first jump. Making the judge recompute the numbers gave the second. Judging substance, not wording, stopped it from punishing good answers."
+ },
+ {
+  "block": "errors",
+  "text": "Plain Gemma is too lenient. It accepts wrong figures and wrong product promises. Our judge is strict where the expert is strict. The price is a few good replies rejected."
+ },
+ {
+  "block": "rulebook",
+  "text": "The rulebook is plain text. Every rule links to the conversations that prove it. So compliance can read it, check it, and change it."
+ },
+ {
+  "block": "fails",
+  "text": "It still struggles with heavy arithmetic. And it can't catch a mistake the expert never showed it."
+ },
+ {
+  "block": "business",
+  "text": "Judging one conversation costs about a fifth of a cent. Learning a new rulebook costs about fifty cents, and twenty minutes. When a tariff changes, the expert labels a small sample, and the judge re-learns. No retraining."
+ },
+ {
+  "block": "next",
+  "text": "One more thing. Next, we split the work. Code checks the numbers, with no model at all. The rulebook judge handles meaning. And the expert looks only where the two disagree."
+ }
+]

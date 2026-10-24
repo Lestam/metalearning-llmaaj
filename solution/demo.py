@@ -88,6 +88,11 @@ def make_handler(book, examples, scores, dashboard=None):
             self.path = self.path.split("?", 1)[0].split("#", 1)[0]
             if self.path in ("/", "/index.html"):
                 return self._send(200, PAGE.read_bytes(), "text/html")
+            if self.path.startswith("/narration/"):
+                f = Path(__file__).with_name("narration") / Path(self.path).name
+                if f.suffix in (".mp3", ".json") and f.exists():
+                    return self._send(200, f.read_bytes(), "audio/mpeg" if f.suffix == ".mp3" else "application/json")
+                return self._send(404, {"error": "not found"})
             if self.path == "/dashboard":
                 return self._send(200, DASHBOARD.read_bytes(), "text/html")
             if self.path == "/api/dashboard":

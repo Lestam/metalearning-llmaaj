@@ -35,6 +35,7 @@ header,main{position:relative;z-index:1}
 @media (prefers-reduced-motion:reduce){.f{animation:none}}
 header{max-width:1440px;margin:0 auto;padding:22px 32px 8px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .logo{width:42px;height:42px;color:var(--blue)}
+.plata-logo{width:46px;height:46px;border-radius:11px;box-shadow:0 6px 16px rgba(255,90,20,.25)}
 h1{margin:0;font-size:26px;letter-spacing:-.02em}
 .sub{color:var(--mut);font-size:14px}
 .switch{margin-left:auto;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px;display:flex;box-shadow:var(--shadow)}
@@ -206,7 +207,7 @@ svg text{font-family:inherit}
   <i class="f f1"></i><i class="f f2"></i><i class="f f3"></i><i class="f f4"></i><i class="f f5"></i><i class="f f6"></i><i class="f f7"></i><i class="f f8"></i>
 </div>
 <header>
-  <svg class="logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M3 5.5c3-1.5 6-1.5 9 .5v14c-3-2-6-2-9-.5z"/><path d="M21 5.5c-3-1.5-6-1.5-9 .5v14c3-2 6-2 9-.5z"/></svg>
+  <img class="logo plata-logo" src="https://platacard.mx/favicons/icon.svg" alt="Plata" onerror="this.replaceWith(this.nextElementSibling.content.cloneNode(true))"><template><svg class="logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M3 5.5c3-1.5 6-1.5 9 .5v14c-3-2-6-2-9-.5z"/><path d="M21 5.5c-3-1.5-6-1.5-9 .5v14c3-2 6-2 9-.5z"/></svg></template>
   <div><h1>Rulebook Judge · Test range</h1>
     <div class="sub">Gemma 4 26B · same model, with and without the learned rulebook · <span id="n">80</span> expert-labeled test conversations</div></div>
   <button class="play" id="play">▶ Play the story <span id="ptime">2:01</span></button>

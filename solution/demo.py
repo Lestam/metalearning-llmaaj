@@ -124,13 +124,19 @@ def make_handler(book, examples, scores, dashboard=None):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--artifacts", default="/artifacts")
-    ap.add_argument("--examples", default="", help="unlabeled or labeled JSONL to offer as presets")
-    ap.add_argument("--scores", default="", help="JSON with before/after results to display")
-    ap.add_argument("--port", type=int, default=8000)
-    ap.add_argument("--gold", default="", help="labeled test CSV for the dashboard")
-    ap.add_argument("--plain-preds", default="", help="plain-Gemma predictions CSV (item_id,label)")
-    ap.add_argument("--ours-preds", default="", help="predictions_explained.jsonl written by eval")
+    root = Path(__file__).resolve().parent.parent  # defaults: the demo bundle shipped in the repo (final public run)
+    ap.add_argument("--artifacts", default=str(root / "demo"), help="directory with rulebook.json")
+    ap.add_argument("--examples", default=str(root / "examples" / "demo_test_conversations.jsonl"),
+                    help="unlabeled or labeled JSONL to offer as presets")
+    ap.add_argument("--scores", default=str(root / "examples" / "demo_scores.json"),
+                    help="JSON with before/after results to display")
+    ap.add_argument("--host", default="127.0.0.1", help="0.0.0.0 inside Docker")
+    ap.add_argument("--port", type=int, default=8765)
+    ap.add_argument("--gold", default=str(root / "data" / "public_test.csv"), help="labeled test CSV for the dashboard")
+    ap.add_argument("--plain-preds", default=str(root / "demo" / "plain_gemma_predictions.csv"),
+                    help="plain-Gemma predictions CSV (item_id,label)")
+    ap.add_argument("--ours-preds", default=str(root / "demo" / "rulebook_judge_predictions.jsonl"),
+                    help="predictions_explained.jsonl written by eval")
     args = ap.parse_args()
     book = json.loads((Path(args.artifacts) / "rulebook.json").read_text())
     examples = []
@@ -142,8 +148,9 @@ def main():
     scores = json.loads(Path(args.scores).read_text()) if args.scores else {}
     dashboard = (dashboard_data(book, args.gold, args.plain_preds, args.ours_preds, scores)
                  if args.gold and args.plain_preds and args.ours_preds else None)
-    server = ThreadingHTTPServer(("127.0.0.1", args.port), make_handler(book, examples, scores, dashboard))
-    print(f"Demo on http://localhost:{args.port}  (model {llm.model_name()} via {llm.PROVIDER})", flush=True)
+    server = ThreadingHTTPServer((args.host, args.port), make_handler(book, examples, scores, dashboard))
+    print(f"Demo on http://localhost:{args.port}/dashboard  (live judge: {llm.model_name()} via {llm.PROVIDER})",
+          flush=True)
     server.serve_forever()
 
 

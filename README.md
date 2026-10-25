@@ -32,6 +32,27 @@ adapt (train.jsonl, labeled)                               eval (test.jsonl, unl
 * **Any violation ⇒ `bad`.** The judge checks each rule against the CONTEXT and every assistant turn and recomputes the
   numbers; the label is `bad` if any applicable rule is violated.
 
+## Try the demo yourself (3 steps)
+
+The repo ships a demo bundle in [demo/](demo/): the rulebook learned in our final public run, its EXPLANATION.md, and
+the verdicts of plain Gemma 4 and of the Rulebook Judge on the 80 public test conversations.
+
+1. Get a free Gemini API key at https://aistudio.google.com/apikey (Gemma 4 on the Gemini API runs on the free tier).
+2. Run:
+   ```sh
+   pip install -r requirements.txt
+   GEMINI_API_KEY=<your key> python -m solution demo
+   ```
+   or with Docker:
+   ```sh
+   docker build -t rulebook-judge . && docker run --rm -p 8765:8765 -e GEMINI_API_KEY=<your key> rulebook-judge demo --host 0.0.0.0
+   ```
+3. Open http://localhost:8765/dashboard — the test-range dashboard (press **▶ Play the story** for the 2-minute narrated
+   walkthrough; click any card for details). **Workbench** judges any conversation live: plain Gemma 4 next to the
+   Rulebook Judge, with the violated rule and the quoted evidence (~10–60 s per conversation on the free tier).
+
+The dashboard needs no model calls (it shows the precomputed public-test run); only the Workbench calls Gemma.
+
 ## How to run
 
 Docker (the interface the organizers use):
